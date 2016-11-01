@@ -1,50 +1,48 @@
-﻿body {
-    padding-top: 50px;
-    padding-bottom: 20px;
+﻿.main {
+    background-color: #ababab;
 }
 
-/* Wrapping element */
-/* Set some basic padding to keep content from hitting the edges */
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+/* The starting CSS styles for the enter animation */
+.fade.ng-enter {
+  transition:0.5s linear all;
+  opacity:0;
 }
 
-/* Set widths on the form inputs since otherwise they're 100% wide */
-input,
-select,
-textarea {
-    max-width: 280px;
+/* The finishing CSS styles for the enter animation */
+.fade.ng-enter.ng-enter-active {
+  opacity:1;
 }
 
-/* Carousel */
-.carousel-caption p {
-    font-size: 20px;
-    line-height: 1.4;
+/* now the element will fade out before it is removed from the DOM */
+.fade.ng-leave {
+  transition:0.5s linear all;
+  opacity:1;
 }
 
-/* buttons and links extension to use brackets: [ click me ] */
-.btn-bracketed::before {
-    display:inline-block;
-    content: "[";
-    padding-right: 0.5em;
-}
-.btn-bracketed::after {
-    display:inline-block;
-    content: "]";
-    padding-left: 0.5em;
+.fade.ng-leave.ng-leave-active {
+  opacity:0;
 }
 
-/* Make .svg files in the carousel display properly in older browsers */
-.carousel-inner .item img[src$=".svg"]
-{
+.wide {
     width: 100%;
 }
 
-/* Hide/rearrange for smaller screens */
-@media screen and (max-width: 767px) {
-  /* Hide captions */
-  .carousel-caption {
-    display: none
-  }
+td {
+    padding: 10px;
+}
+
+.padded {
+    padding: 10px;
+}
+
+.bright {
+    border: 2px solid gold;
+}
+
+.success {
+    color: green;
+}
+
+.failure {
+    color: red;
 }

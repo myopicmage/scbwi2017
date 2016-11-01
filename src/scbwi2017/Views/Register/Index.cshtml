@@ -1,0 +1,356 @@
+﻿@{
+    ViewData["Title"] = "Register";
+}
+
+<div layout="column" flex ng-controller="RegCtrl as main" class="main">
+    <md-toolbar class="md-toolbar md-hue-2">
+        <div class="md-toolbar-tools">
+            <h3 style="color: #353535">
+                January Registration
+            </h3>
+        </div>
+    </md-toolbar>
+
+    <md-content layout="column" class="bgBody" layout-align="top start" flex="70" layout-padding md-scroll-y layout-fill ng-hide="main.timetopay">
+        <form name="regform" novalidate layout="column" layout-margin layout-padding class="wide">
+            <md-card ng-show="mainapp.step === 0" class="fade" flex>
+                <md-card-title>
+                    <md-card-title-text>
+                        Are you a member?
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    Sign up at <a href="http://www.scbwi.org/">scbwi.org</a>
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button class="md-raised" ng-click="main.member(false);">
+                        <md-icon>thumb_down</md-icon> No
+                    </md-button>
+                    <md-button class="md-raised md-primary" ng-click="main.member(true);">
+                        <md-icon>thumb_up</md-icon> Yes
+                    </md-button>
+                </md-card-actions>
+            </md-card>
+            <md-card ng-show="mainapp.step === 1" class="fade">
+                <md-card-title>
+                    <md-card-title-text>
+                        Please provide some basic information
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content layout-wrap>
+                    <md-input-container>
+                        <label>First Name</label>
+                        <input ng-model="main.reg.user.first" required name="first" />
+                        <div ng-messages="regform.first.$error">
+                            <div ng-message="required">You must enter your name.</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Last Name</label>
+                        <input ng-model="main.reg.user.last" required name="last" />
+                        <div ng-messages="regform.last.$error">
+                            <div ng-message="required">You must enter your name.</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Email</label>
+                        <input ng-model="main.reg.user.email" required name="email" />
+                        <div ng-messages="regform.email.$error">
+                            <div ng-message="required">You must enter a valid email address.</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Phone</label>
+                        <input ng-model="main.reg.user.phone" required name="phone" />
+                        <div ng-messages="regform.phone.$error">
+                            <div ng-message="required">You must enter a valid phone.</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Country</label>
+                        <md-select ng-model="main.reg.user.country" required name="country">
+                            <md-option value="USA">United States</md-option>
+                            <md-option value="Canada">Canada</md-option>
+                        </md-select>
+                        <div ng-messages="regform.country.$error">
+                            <div ng-message="required">You must select a country</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Address 1</label>
+                        <input ng-model="main.reg.user.address1" required name="address1" />
+                        <div ng-messages="regform.address1.$error">
+                            <div ng-message="required">You must enter a valid address.</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Address 2</label>
+                        <input ng-model="main.reg.user.address2" />
+                    </md-input-container>
+                    <md-input-container>
+                        <label>City</label>
+                        <input ng-model="main.reg.user.city" required name="city" />
+                        <div ng-messages="regform.city.$error">
+                            <div ng-message="required">You must enter a valid city</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>State/Province</label>
+                        <input ng-model="main.reg.user.state" required name="state" />
+                        <div ng-messages="regform.state.$error">
+                            <div ng-message="required">You must enter a state</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Zip/Postal Code</label>
+                        <input ng-model="main.reg.user.zip" required name="zip" />
+                        <div ng-messages="regform.zip.$error">
+                            <div ng-message="required">You must enter a valid zip</div>
+                        </div>
+                    </md-input-container>
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button class="md-raised md-primary" ng-click="main.userInfo()" @*ng-disabled="!regform.$valid" *@>
+                        <md-icon>done</md-icon> Continue
+                    </md-button>
+                </md-card-actions>
+            </md-card>
+            <md-card ng-show="mainapp.step === 2" class="fade">
+                <md-card-title>
+                    <md-card-title-text>
+                        Please choose a registration type
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    <md-radio-group ng-model="main.reg.type" required name="regtype" ng-change="main.select()">
+                        <div ng-repeat="package in main.regTypes" class="row">
+                            <div flex layout='row' layout-padding layout-align="start center">
+                                <div flex style="max-width: 200px;">
+                                    <b>Early: {{package.earlyprice | currency : "$" : 0}}</b><br />
+                                    <b>Late: {{package.lateprice | currency : "$" : 0}}</b>
+                                </div>
+                                <md-radio-button flex ng-value="package.id" class="md-primary">
+                                    <b>{{package.title}}</b> - {{package.description}}<br />
+                                    <b>Presented by:</b> {{package.presenters}}
+                                </md-radio-button>
+                            </div>
+                        </div>
+                    </md-radio-group>
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button class="md-raised md-primary" ng-click="main.typeSelect()" ng-disabled="regform.regtype.$error.required">
+                        <md-icon>done</md-icon> Continue
+                    </md-button>
+                </md-card-actions>
+            </md-card>
+            <md-card ng-show="mainapp.step === 3" class="fade">
+                <md-card-title>
+                    <span ng-hide="main.regType.friday">Optional:</span> Select a Comprehensive
+                </md-card-title>
+                <md-card-content>
+                    <md-radio-group ng-model="main.reg.comprehensive" ng-required="main.regType.friday" name="comprehensive">
+                        <div ng-repeat="comprehensive in main.comprehensives" class="row">
+                            <div flex layout='row' layout-padding layout-align="start center">
+                                <div flex style="max-width: 100px;">
+                                    <b ng-show="main.regType.friday">{{comprehensive.extracost | currency : "$" : 0}}</b>
+                                    <b ng-hide="main.regType.friday">{{comprehensive.price | currency : "$" : 0}}</b>
+                                </div>
+                                <md-radio-button flex ng-value="comprehensive.id" class="md-primary">
+                                    <b>{{comprehensive.title}}</b> - {{comprehensive.description}}
+                                    <br />
+                                    Presented By: {{comprehensive.presenters}}
+                                </md-radio-button>
+                            </div>
+                        </div>
+                    </md-radio-group>
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button class="md-raised" ng-click="main.comprehensive(true)" ng-hide="main.regType.friday">
+                        <md-icon>thumb_down</md-icon>No thanks
+                    </md-button>
+                    <md-button class="md-raised md-primary" ng-click="main.comprehensive(false)" ng-disabled="regform.comprehensive.$error.required">
+                        <md-icon ng-hide="main.regType.friday">thumb_up</md-icon>Select
+                    </md-button>
+                </md-card-actions>
+            </md-card>
+            <md-card ng-show="mainapp.step === 4" class="fade">
+                <md-card-title>
+                    Select your sunday workshops (required)
+                </md-card-title>
+                <md-card-content>
+                    <h3>First Session</h3>
+                    <md-radio-group ng-model="main.reg.first" class="row" ng-required="main.regType.sunday" name="w_first">
+                        <div ng-repeat="w in main.earlyworkshops">
+                            <md-radio-button flex ng-value="w.id" class="md-primary">
+                                <b>{{w.title}}</b> - {{w.description}}<br />
+                                Presented By: {{w.presenters}}
+                            </md-radio-button>
+                        </div>
+                    </md-radio-group>
+
+                    <h3>Second Session</h3>
+                    <md-radio-group ng-model="main.reg.second" class="row" ng-required="main.regType.sunday" name="w_second">
+                        <div ng-repeat="w in main.lateworkshops">
+                            <md-radio-button flex ng-value="w.id" class="md-primary">
+                                <b>{{w.title}}</b> - {{w.description}}<br />
+                                Presented By: {{w.presenters}}
+                            </md-radio-button>
+                        </div>
+                    </md-radio-group>
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button class="md-primary md-raised" ng-click="main.workshops()"
+                               ng-disabled="regform.w_first.$error.required || regform.w_second.$error.required">
+                        <md-icon>done</md-icon> Continue
+                    </md-button>
+                </md-card-actions>
+            </md-card>
+            <md-card ng-show="mainapp.step === 5" class="fade">
+                <md-card-title>
+                    <md-card-title-text>
+                        Final Questions and Addons
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    <h3>Will you be taking the bus friday night?</h3>
+                    <md-input-container>
+                        <md-select ng-model="main.reg.takingbus" required name="takingbus" aria-label="are you taking the bus">
+                            <md-option value="true">Yes</md-option>
+                            <md-option value="false">No</md-option>
+                        </md-select>
+                        <div ng-messages="regform.takingbus.$error">
+                            <div ng-message="required">You must make a selection.</div>
+                        </div>
+                    </md-input-container>
+
+                    <h3>What meal would you like for saturday's dinner?</h3>
+                    <md-radio-group ng-model="main.reg.meal" class="row" required name="meal">
+                        <div ng-repeat="m in main.meals">
+                            <md-radio-button flex ng-value="m.id" class="md-primary">
+                                {{m.title}}
+                            </md-radio-button>
+                        </div>
+                    </md-radio-group>
+
+                    <h3>Would you like any manuscript critiques? (+{{main.prices.manuscript | currency : "$" : 0}} each)</h3>
+                    <md-radio-group ng-model="main.reg.manuscripts" flex layout="row">
+                        <md-radio-button ng-value="0" flex class="md-primary">0</md-radio-button>
+                        <md-radio-button ng-value="1" flex class="md-primary">1</md-radio-button>
+                        <md-radio-button ng-value="2" flex class="md-primary">2</md-radio-button>
+                        <md-radio-button ng-value="3" flex class="md-primary">3</md-radio-button>
+                        <md-radio-button ng-value="4" flex class="md-primary">4</md-radio-button>
+                    </md-radio-group>
+
+                    <h3>Would you like any portfolio reviews? (+{{main.prices.portfolio | currency : "$" : 0}} each)</h3>
+                    <md-radio-group ng-model="main.reg.portfolios" flex layout="row">
+                        <md-radio-button ng-value="0" flex class="md-primary">0</md-radio-button>
+                        <md-radio-button ng-value="1" flex class="md-primary">1</md-radio-button>
+                        <md-radio-button ng-value="2" flex class="md-primary">2</md-radio-button>
+                        <md-radio-button ng-value="3" flex class="md-primary">3</md-radio-button>
+                        <md-radio-button ng-value="4" flex class="md-primary">4</md-radio-button>
+                    </md-radio-group>
+
+                    <h3>Do you want to purchase any extra tickets to the saturday night dinner? (+{{main.prices.satdinner | currency : "$" : 0}} each)</h3>
+                    <md-radio-group ng-model="main.reg.satdinner" flex layout="row">
+                        <md-radio-button ng-value="0" flex class="md-primary">0</md-radio-button>
+                        <md-radio-button ng-value="1" flex class="md-primary">1</md-radio-button>
+                        <md-radio-button ng-value="2" flex class="md-primary">2</md-radio-button>
+                        <md-radio-button ng-value="3" flex class="md-primary">3</md-radio-button>
+                        <md-radio-button ng-value="4" flex class="md-primary">4</md-radio-button>
+                    </md-radio-group>
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button ng-click="main.extras()" ng-disabled="regform.takingbus.$error.required || regform.meal.$error.required" class="md-primary md-raised">
+                        <md-icon>done</md-icon> Continue
+                    </md-button>
+                </md-card-actions>
+            </md-card>
+            <md-card ng-show="mainapp.step === 6" class="fade">
+                <md-card-title>
+                    <md-card-title-text>
+                        Verify your choices. Click the steps on the left to go back.
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content layout="column">
+                    <table class="padded">
+                        <tbody>
+                            <tr>
+                                <td><b>Name</b></td>
+                                <td>{{main.reg.user.first}} {{main.reg.user.last}}</td>
+                                <td><b>Registration Chosen</b></td>
+                                <td>{{main.regType.title}}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Address</b></td>
+                                <td>
+                                    {{main.reg.user.address1}}<br />
+                                    {{main.reg.user.address2}}<br />
+                                    {{main.reg.user.city}}, {{main.reg.user.state}} {{main.reg.user.zip}}<br />
+                                    {{main.reg.user.country}}
+                                </td>
+                                <td><b>Comprehensive Chosen:</b></td>
+                                <td>{{main.c_name}}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Email:</b></td>
+                                <td>{{main.reg.user.email}}</td>
+                                <td><b>Workshops Chosen:</b></td>
+                                <td>
+                                    {{main.w_first}}<br />
+                                    {{main.w_second}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Phone:</b></td>
+                                <td>{{main.reg.user.phone}}</td>
+                                <td><b>Critiques requested:</b></td>
+                                <td>
+                                    Manuscript: {{main.reg.manuscripts}}<br />
+                                    Portfolio: {{main.reg.portfolios}}<br />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Saturday Night Dinner Chosen:</b></td>
+                                <td>{{main.meal}}</td>
+                                <td><b>Are you taking the bus friday night?</b></td>
+                                <td>{{main.reg.takingbus == "true" ? "Yes" : "No"}}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Any extra Saturday Dinner Tickets?</b></td>
+                                <td>{{main.reg.satdinner}}</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><b>Subtotal:</b></td>
+                                <td>{{main.subtotal | currency : "$"}}</td>
+                                <td ng-class="{'bright': main.couponsuccess}"><b>Total:</b></td>
+                                <td ng-class="{'bright': main.couponsuccess}">{{main.total | currency : "$"}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 10px;" class="padded">
+                        If you have a coupon code, please enter it here:
+                    </div>
+                    <div class="padded">
+                        <md-input-container>
+                            <label>Code</label>
+                            <input ng-model="main.reg.coupon" />
+                        </md-input-container>
+                        <md-button class="md-raised" ng-click="main.submitCoupon()" ng-disabled="main.disableCouponButton">
+                            Check
+                        </md-button>
+                        <span ng-show="main.c_msg_show" ng-class="{'success': main.couponsuccess, 'failure': !main.couponsuccess}">
+                            {{main.c_message}}
+                        </span>
+                    </div>
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button class="md-primary md-raised" ng-click="main.verified()">
+                        <md-icon>done</md-icon> Looks Good
+                    </md-button>
+                </md-card-actions>
+            </md-card>
+        </form>
+    </md-content>
+</div>

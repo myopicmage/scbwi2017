@@ -1,65 +1,159 @@
 ﻿<!DOCTYPE html>
-<html>
+<html ng-app="scbwi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - scbwi2017</title>
+    <title>@ViewData["Title"] - SCBWI Florida 2017</title>
 
     <environment names="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="~/lib/angular-material/angular-material.css" />
     </environment>
     <environment names="Staging,Production">
-        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
-              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="lib/angular-material/angular-material.min.css" />
     </environment>
 </head>
-<body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">scbwi2017</a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
-                </ul>
-                @await Html.PartialAsync("_LoginPartial")
-            </div>
-        </div>
-    </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; 2016 - scbwi2017</p>
-        </footer>
-    </div>
+<body layout="row" ng-controller="AppCtrl as mainapp">
+    <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
+        <md-toolbar class="md-toolbar md-hue-3">
+            <h1 class="md-toolbar-tools">SCBWI Florida</h1>
+        </md-toolbar>
+        <md-list class="left-menu">
+            <md-subheader>Registration</md-subheader>
+            <md-list-item>
+                <a>
+                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                        <div class="inset">
+                            <md-button ng-class="{'md-primary': mainapp.step == 0}" class="md-fab md-mini">
+                                0
+                            </md-button>
+                        </div>
+                        <div class="inset menu-text">
+                            Membership
+                        </div>
+                    </md-item-content>
+                </a>
+            </md-list-item>
+            <md-list-item>
+                <a>
+                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                        <div class="inset">
+                            <md-button ng-class="{'md-primary': mainapp.step == 1}" class="md-fab md-mini">
+                                1
+                            </md-button>
+                        </div>
+                        <div class="inset menu-text">
+                            Basic Info
+                        </div>
+                    </md-item-content>
+                </a>
+            </md-list-item>
+            <md-list-item>
+                <a>
+                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                        <div class="inset">
+                            <md-button ng-class="{'md-primary': mainapp.step == 2}" class="md-fab md-mini">
+                                2
+                            </md-button>
+                        </div>
+                        <div class="inset menu-text">
+                            Registration Type
+                        </div>
+                    </md-item-content>
+                </a>
+            </md-list-item>
+            <md-list-item>
+                <a>
+                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                        <div class="inset">
+                            <md-button ng-class="{'md-primary': mainapp.step === 3}" class="md-fab md-mini" ng-disabled="!mainapp.friday">
+                                3
+                            </md-button>
+                        </div>
+                        <div class="inset menu-text">
+                            Comprehensives
+                        </div>
+                    </md-item-content>
+                </a>
+            </md-list-item>
+            <md-list-item>
+                <a>
+                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                        <div class="inset">
+                            <md-button ng-class="{'md-primary': mainapp.step === 4}" class="md-fab md-mini" ng-disabled="!mainapp.allowSunday">
+                                4
+                            </md-button>
+                        </div>
+                        <div class="inset menu-text">
+                            Workshops
+                        </div>
+                    </md-item-content>
+                </a>
+            </md-list-item>
+            <md-list-item>
+                <a>
+                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                        <div class="inset">
+                            <md-button ng-class="{'md-primary': mainapp.step === 5}" class="md-fab md-mini">
+                                5
+                            </md-button>
+                        </div>
+                        <div class="inset menu-text">
+                            Extras
+                        </div>
+                    </md-item-content>
+                </a>
+            </md-list-item>
+            <md-list-item>
+                <a>
+                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                        <div class="inset">
+                            <md-button ng-class="{'md-primary': mainapp.step === 6}" class="md-fab md-mini">
+                                6
+                            </md-button>
+                        </div>
+                        <div class="inset menu-text">
+                            Verify
+                        </div>
+                    </md-item-content>
+                </a>
+            </md-list-item>
+            <md-list-item>
+                <a>
+                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                        <div class="inset">
+                            <md-button ng-class="{'md-primary': mainapp.step === 7}" class="md-fab md-mini">
+                                7
+                            </md-button>
+                        </div>
+                        <div class="inset menu-text">
+                            Submit & Pay
+                        </div>
+                    </md-item-content>
+                </a>
+            </md-list-item>
+        </md-list>
+    </md-sidenav>
+
+    @RenderBody()
 
     <environment names="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/lib/angular/angular.js"></script>
+        <script src="~/lib/angular-animate/angular-animate.js"></script>
+        <script src="~/lib/angular-aria/angular-aria.js"></script>
+        <script src="~/lib/angular-messages/angular-messages.js"></script>
+        <script src="~/lib/angular-material/angular-material.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
     <environment names="Staging,Production">
-        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
-                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-                asp-fallback-test="window.jQuery">
-        </script>
-        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
-                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
-                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
-        </script>
+        <script src="~/lib/angular/angular.min.js"></script>
+        <script src="~/lib/angular-animate/angular-animate.min.js"></script>
+        <script src="~/lib/angular-aria/angular-aria.min.js"></script>
+        <script src="~/lib/angular-messages/angular-messages.min.js"></script>
+        <script src="~/lib/angular-material/angular-material.min.js"></script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 
