@@ -18,6 +18,8 @@ namespace scbwi2017.Models.RegistrationViewModels
         public string takingbus { get; set; }
         public int type { get; set; }
         public UserViewModel user { get; set; }
+
+        public string nonce { get; set; }
     }
 
     public class UserViewModel

@@ -40,7 +40,8 @@
       "type": "build"
     },
     "Microsoft.EntityFrameworkCore.Sqlite.Design": "1.0.1",
-    "Microsoft.EntityFrameworkCore.Sqlite": "1.0.1"
+    "Microsoft.EntityFrameworkCore.Sqlite": "1.0.1",
+    "Braintree": "3.0.1"
   },
 
   "tools": {

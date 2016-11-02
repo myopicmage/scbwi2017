@@ -4,24 +4,34 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using scbwi2017.Data;
 using scbwi2017.Models.Data;
 using scbwi2017.Models.RegistrationViewModels;
+using Braintree;
+using Microsoft.Extensions.Options;
+using scbwi2017.Services;
 
 namespace scbwi2017.Controllers
 {
     public class RegisterController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private BraintreeGateway gateway;
         private readonly ILogger _logger;
+        private readonly IOptions<Secrets> _secrets;
 
-        public RegisterController(ApplicationDbContext ctx, ILoggerFactory factory)
+        public RegisterController(ApplicationDbContext ctx, ILoggerFactory factory, IOptions<Secrets> sec)
         {
             _db = ctx;
             _logger = factory.CreateLogger("All");
+            _secrets = sec;
+            gateway = new BraintreeGateway(_secrets.Value.paypaltoken);
         }
 
         public IActionResult Index() => View();
+
+        public IActionResult GetToken() => Json(gateway.ClientToken.generate());
 
         public IActionResult RegTypes([FromBody] bool member)
         {
@@ -68,6 +78,66 @@ namespace scbwi2017.Controllers
         public IActionResult Total([FromBody] RegistrationViewModel r)
         {
             return Json(CalcTotal(r));
+        }
+
+        public IActionResult Register([FromBody] RegistrationViewModel r)
+        {
+            var totals = CalcTotal(r);
+            var reg = new Registration(r)
+            {
+                cleared = new DateTime(2000, 1, 1),
+                coupon = _db.Coupons.SingleOrDefault(x => x.text == r.coupon),
+                created = DateTime.Now,
+                createdby = r.user.email,
+                Extras = new List<Extra>
+                {
+                    _db.Extras.SingleOrDefault(x => x.id == r.comprehensive)
+                },
+                first = _db.Workshops.SingleOrDefault(x => x.id == r.first),
+                manuscript = r.manuscripts,
+                meal = _db.Meals.SingleOrDefault(x => x.id == r.meal),
+                modified = DateTime.Now,
+                modifiedby = r.user.email,
+                paid = new DateTime(2000, 1, 1),
+                paypalid = $"{r.user.first}{r.user.last}{DateTime.Now}",
+                portfolio = r.portfolios,
+                second = _db.Workshops.SingleOrDefault(x => x.id == r.second),
+                subtotal = totals.subtotal,
+                takingbus = r.takingbus == "true" ? true : false,
+                total = totals.total,
+                type = _db.Types.SingleOrDefault(x => x.id == r.type)
+            };
+
+            TransactionRequest request = new TransactionRequest
+            {
+                Amount = totals.total,
+                MerchantAccountId = "USD",
+                PaymentMethodNonce = r.nonce,
+                Options = new TransactionOptionsRequest
+                {
+                    PayPal = new TransactionOptionsPayPalRequest
+                    {
+                        CustomField = reg.paypalid,
+                        Description = "SCBWI Florida January 2017 Conference",
+                    },
+                    SubmitForSettlement = true
+                }
+            };
+
+            Result<Transaction> result = gateway.Transaction.Sale(request);
+
+            if (result.IsSuccess())
+            {
+                _logger.LogInformation($"Transaction ID {result.Target.Id} has passed");
+
+                return Json(true);
+            }
+            else
+            {
+                _logger.LogInformation($"Transaction ID {result.Target.Id} has failed");
+
+                return Json(false);
+            }
         }
 
         private bool NotFull(Extra e)

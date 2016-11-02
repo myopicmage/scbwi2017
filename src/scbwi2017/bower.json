@@ -6,6 +6,7 @@
     "jquery": "2.2.0",
     "jquery-validation": "1.14.0",
     "jquery-validation-unobtrusive": "3.2.6",
-    "angular-material": "1.1.1" 
+    "angular-material": "1.1.1",
+    "braintree-web": "3.5.0"
   }
 }

@@ -85,6 +85,11 @@ function RegController(menu, info) {
     self.reg.satdinner = 0;
     self.prices = {};
     self.disableCouponButton = false;
+    self.readyToPay = false;
+
+    info.getToken(function (token) {
+        self.token = token;
+    });
 
     //step 0
     self.member = function (isMember) {
@@ -142,7 +147,7 @@ function RegController(menu, info) {
         if (ignoreSelection) {
             self.reg.comprehensive = 0;
         }
-        
+
         var next = 4;
 
         if (!menu.getSunday()) {
@@ -209,6 +214,37 @@ function RegController(menu, info) {
 
         menu.setSunday(self.regType.sunday);
         menu.setFriday(self.regType.friday || (menu.getMember() && self.regType.sunday));
+    }
+
+    self.setupButton = function () {
+        var ppbutton = document.getElementById('paypal-button');
+
+        braintree.client.create({
+            authorization: self.token
+        }, function (clientErr, clientInstance) {
+            // Create PayPal component
+            braintree.paypal.create({
+                client: clientInstance
+            }, function (err, paypalInstance) {
+                ppbutton.addEventListener('click', function () {
+                    console.log('click!');
+                    // Tokenize here!
+                    paypalInstance.tokenize({
+                        flow: 'checkout', // Required
+                        amount: self.total, // Required
+                        currency: 'USD', // Required
+                        locale: 'en_US',
+                    }, function (err, tokenizationPayload) {
+                        self.reg.nonce = tokenizationPayload.nonce;
+                        info.register(self.reg, function (data) {
+                            console.log(data);
+                        });
+                    });
+                });
+            });
+        });
+
+        self.readyToPay = true;
     }
 }
 
@@ -414,6 +450,20 @@ function InfoService($http, error) {
         $http
             .post('/register/total', reg)
             .then(success, e);
+    }
+
+    infoService.getToken = function (callback) {
+        $http
+            .get('/register/gettoken')
+            .then(function (data) {
+                callback(data.data);
+            });
+    }
+
+    infoService.register = function (r, callback) {
+        $http
+            .post('/register/register', r)
+            .then(callback);
     }
 
     return infoService;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using scbwi2017.Models.RegistrationViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,6 +30,23 @@ namespace scbwi2017.Models.Data
         public void SetPayPalId()
         {
             paypalid = $"{user.firstname}{user.lastname}{created.Ticks}";
+        }
+
+        public Registration() { }
+
+        public Registration(RegistrationViewModel r)
+        {
+            user = new ApplicationUser();
+
+            user.firstname = r.user.first;
+            user.lastname = r.user.last;
+            user.phone = r.user.phone;
+            user.postalcode = r.user.zip;
+            user.address1 = r.user.address1;
+            user.address2 = r.user.address2;
+            user.city = r.user.city;
+            user.Email = r.user.email;
+            user.UserName = r.user.email;
         }
     }
 }

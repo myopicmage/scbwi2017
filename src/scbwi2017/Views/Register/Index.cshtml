@@ -345,10 +345,21 @@
                         </span>
                     </div>
                 </md-card-content>
-                <md-card-actions layout="row" layout-align="end center">
-                    <md-button class="md-primary md-raised" ng-click="main.verified()">
-                        <md-icon>done</md-icon> Looks Good
+                <md-card-actions layout="row" layout-align="end center" ng-hide="main.readyToPay">
+                    <md-button class="md-primary md-raised" ng-click="main.setupButton()">
+                        <md-icon>done</md-icon> Looks Good!
                     </md-button>
+                </md-card-actions>
+                <md-card-actions layout="row" layout-align="end center" ng-show="main.readyToPay">
+                    <script src="https://www.paypalobjects.com/api/button.js?"
+                            data-merchant="braintree"
+                            data-id="paypal-button"
+                            data-button="checkout"
+                            data-color="blue"
+                            data-size="medium"
+                            data-shape="pill"
+                            data-button_type="submit"
+                            data-button_disabled="false"></script>
                 </md-card-actions>
             </md-card>
         </form>

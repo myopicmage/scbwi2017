@@ -52,6 +52,21 @@ namespace scbwi2017
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            services.AddOptions();
+
+            services.Configure<Secrets>(opts => {
+                opts.environ = Configuration["ASPNETCORE_ENVIRONMENT"];
+
+                if (opts.environ.ToLower() == "development")
+                {
+                    opts.paypaltoken = Configuration["braintree-dev"];
+                }
+                else
+                {
+                    opts.paypaltoken = Configuration["braintree-prod"];
+                }
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
