@@ -56,16 +56,8 @@ namespace scbwi2017
             services.AddOptions();
 
             services.Configure<Secrets>(opts => {
-                opts.environ = Configuration["ASPNETCORE_ENVIRONMENT"];
-
-                if (opts.environ.ToLower() == "development")
-                {
-                    opts.paypaltoken = Configuration["braintree-dev"];
-                }
-                else
-                {
-                    opts.paypaltoken = Configuration["braintree-prod"];
-                }
+                opts.sendgridkey = Configuration["sendgrid"];
+                opts.paypaltoken = Configuration["braintree"];
             });
         }
 

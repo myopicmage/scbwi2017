@@ -17,21 +17,21 @@ namespace scbwi2017.Controllers
     public class RegisterController : Controller
     {
         private readonly ApplicationDbContext _db;
-        private BraintreeGateway gateway;
+        private readonly BraintreeGateway _gateway;
         private readonly ILogger _logger;
-        private readonly IOptions<Secrets> _secrets;
+        private readonly IEmailSender _email;
 
-        public RegisterController(ApplicationDbContext ctx, ILoggerFactory factory, IOptions<Secrets> sec)
+        public RegisterController(ApplicationDbContext ctx, ILoggerFactory factory, IOptions<Secrets> sec, IEmailSender esvc)
         {
             _db = ctx;
             _logger = factory.CreateLogger("All");
-            _secrets = sec;
-            gateway = new BraintreeGateway(_secrets.Value.paypaltoken);
+            _gateway = new BraintreeGateway(sec.Value.paypaltoken);
+            _email = esvc;
         }
 
         public IActionResult Index() => View();
 
-        public IActionResult GetToken() => Json(gateway.ClientToken.generate());
+        public IActionResult GetToken() => Json(_gateway.ClientToken.generate());
 
         public IActionResult RegTypes([FromBody] bool member)
         {
@@ -80,7 +80,7 @@ namespace scbwi2017.Controllers
             return Json(CalcTotal(r));
         }
 
-        public IActionResult Register([FromBody] RegistrationViewModel r)
+        public async Task<IActionResult> Register([FromBody] RegistrationViewModel r)
         {
             var totals = CalcTotal(r);
             var reg = new Registration(r)
@@ -89,9 +89,9 @@ namespace scbwi2017.Controllers
                 coupon = _db.Coupons.SingleOrDefault(x => x.text == r.coupon),
                 created = DateTime.Now,
                 createdby = r.user.email,
-                Extras = new List<Extra>
+                Extras = _db.Extras.SingleOrDefault(x => x.id == r.comprehensive) == null ? null : new List<Extra>
                 {
-                    _db.Extras.SingleOrDefault(x => x.id == r.comprehensive)
+                    _db.Extras.SingleOrDefault(x => x.id == r.comprehensive) 
                 },
                 first = _db.Workshops.SingleOrDefault(x => x.id == r.first),
                 manuscript = r.manuscripts,
@@ -103,12 +103,13 @@ namespace scbwi2017.Controllers
                 portfolio = r.portfolios,
                 second = _db.Workshops.SingleOrDefault(x => x.id == r.second),
                 subtotal = totals.subtotal,
-                takingbus = r.takingbus == "true" ? true : false,
+                takingbus = r.takingbus == "true",
                 total = totals.total,
-                type = _db.Types.SingleOrDefault(x => x.id == r.type)
+                type = _db.Types.SingleOrDefault(x => x.id == r.type),
+                satdinner = r.satdinner
             };
 
-            TransactionRequest request = new TransactionRequest
+            var request = new TransactionRequest
             {
                 Amount = totals.total,
                 MerchantAccountId = "USD",
@@ -124,20 +125,65 @@ namespace scbwi2017.Controllers
                 }
             };
 
-            Result<Transaction> result = gateway.Transaction.Sale(request);
+            var result = _gateway.Transaction.Sale(request);
 
             if (result.IsSuccess())
             {
                 _logger.LogInformation($"Transaction ID {result.Target.Id} has passed");
 
-                return Json(true);
-            }
-            else
-            {
-                _logger.LogInformation($"Transaction ID {result.Target.Id} has failed");
+                reg.paid = result.Target.CreatedAt ?? DateTime.Now;
+                reg.cleared = result.Target.CreatedAt ?? DateTime.Now;
 
-                return Json(false);
+                _db.Registrations.Add(reg);
+
+                try
+                {
+                    _db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogCritical("Registration", ex);
+
+                    return Json(new
+                    {
+                        success = false,
+                        error = "Something went wrong saving your payment. Please do not submit again.",
+                        submitagain = false
+                    });
+                }
+
+                try
+                {
+                    var emailResp =
+                        await
+                            _email.SendEmailAsync(reg.user.Email, "Successful Registration",
+                                reg.GenEmail(),
+                                $"{reg.user.firstname} {reg.user.lastname}");
+
+                    if (!emailResp.IsSuccessStatusCode)
+                    {
+                        _logger.LogWarning($"Failed to send confirmation to {reg.user.Email}. Reason: {emailResp.ReasonPhrase}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning($"Failed to send registration confirmation due to {ex.Message}");
+                }
+
+                return Json(new
+                {
+                    success = true
+                });
             }
+
+            _logger.LogInformation($"Transaction ID {result.Target.Id} has failed");
+
+            return Json(new
+            {
+                success = false,
+                error = string.Join("\n", result.Errors.All()),
+                submitagain = true
+            });
         }
 
         private bool NotFull(Extra e)

@@ -1,5 +1,56 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿<table>
+    <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td>{flat.firstname} {flat.lastname}</td>
+            <td><b>Registration Chosen</b></td>
+            <td>{flat.registrationtype}</td>
+        </tr>
+        <tr>
+            <td><b>Address</b></td>
+            <td>
+                {flat.address1}<br />
+                {flat.address2}<br />
+                {flat.city}, {flat.state} {flat.postalcode}<br />
+            </td>
+            <td><b>Comprehensive Chosen:</b></td>
+            <td>{flat.comprehensive}</td>
+        </tr>
+        <tr>
+            <td><b>Email:</b></td>
+            <td>{flat.Email}</td>
+            <td><b>Workshops Chosen:</b></td>
+            <td>
+                {flat.first_workshop}<br />
+                {flat.second_workshop}
+            </td>
+        </tr>
+        <tr>
+            <td><b>Phone:</b></td>
+            <td>{flat.phone}</td>
+            <td><b>Critiques requested:</b></td>
+            <td>
+                Manuscript: {flat.manuscript}<br />
+                Portfolio: {flat.portfolio}<br />
+            </td>
+        </tr>
+        <tr>
+            <td><b>Saturday Night Dinner Chosen:</b></td>
+            <td>{flat.meal}</td>
+            <td><b>Are you taking the bus friday night?</b></td>
+            <td>{flat.takingbus}</td>
+        </tr>
+        <tr>
+            <td><b>Any extra Saturday Dinner Tickets?</b></td>
+            <td>{flat.satdinner}</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><b>Subtotal:</b></td>
+            <td>{flat.subtotal}</td>
+            <td><b>Total:</b></td>
+            <td>{flat.total}</td>
+        </tr>
+    </tbody>
+</table>

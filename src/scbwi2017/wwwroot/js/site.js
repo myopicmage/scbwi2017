@@ -61,7 +61,7 @@ function AppController(menu, $scope, error) {
     });
 }
 
-function RegController(menu, info) {
+function RegController(menu, info, $mdDialog, error) {
     var self = this;
 
     self.regTypes = [];
@@ -109,16 +109,15 @@ function RegController(menu, info) {
             self.lateworkshops = data.late;
         });
 
+        info.getComprehensives(function (data) {
+            self.comprehensives = data;
+        });
+
         menu.setStep(1);
     }
 
     //step 1
     self.userInfo = function () {
-        if (menu.getMember()) {
-            info.getComprehensives(function (data) {
-                self.comprehensives = data;
-            });
-        }
 
         menu.setStep(2);
     }
@@ -216,6 +215,19 @@ function RegController(menu, info) {
         menu.setFriday(self.regType.friday || (menu.getMember() && self.regType.sunday));
     }
 
+    self.showDialog = function () {
+        $mdDialog.show({
+            controller: DialogController,
+            contentElement: '#loading',
+            parent: angular.element(document.body),
+            clickOutsideToClose: false
+        });
+    }
+
+    self.showError = function () {
+        error.error('Error', 'Do you hide?');
+    }
+
     self.setupButton = function () {
         var ppbutton = document.getElementById('paypal-button');
 
@@ -227,7 +239,9 @@ function RegController(menu, info) {
                 client: clientInstance
             }, function (err, paypalInstance) {
                 ppbutton.addEventListener('click', function () {
-                    console.log('click!');
+                    self.showDialog();
+                    console.log(self.total);
+
                     // Tokenize here!
                     paypalInstance.tokenize({
                         flow: 'checkout', // Required
@@ -237,6 +251,18 @@ function RegController(menu, info) {
                     }, function (err, tokenizationPayload) {
                         self.reg.nonce = tokenizationPayload.nonce;
                         info.register(self.reg, function (data) {
+                            if (data.success) {
+                                menu.setStep(7);
+                            } else {
+                                error.error('Error', data.error);
+
+                                if (data.submitagain === false) {
+                                    ppbutton.disabled = true;
+                                }
+                            }
+
+                            $mdDialog.hide();
+
                             console.log(data);
                         });
                     });
@@ -248,7 +274,21 @@ function RegController(menu, info) {
     }
 }
 
-function ErrorService($rootScope) {
+function DialogController($scope, $mdDialog) {
+    $scope.hide = function () {
+        $mdDialog.hide();
+    };
+
+    $scope.cancel = function () {
+        $mdDialog.cancel();
+    };
+
+    $scope.answer = function (answer) {
+        $mdDialog.hide(answer);
+    };
+}
+
+function ErrorService($rootScope, $mdToast) {
     var errorService = {};
 
     errorService.subscribe = function (scope, callback) {
@@ -258,6 +298,13 @@ function ErrorService($rootScope) {
 
     errorService.error = function (type, text) {
         $rootScope.$emit('error-event', type, text);
+        $mdToast.show(
+          $mdToast.simple()
+            .textContent('' + type + ": " + text)
+            .position('top right')
+            .action('CLOSE')
+            .hideDelay(100000)
+        );
     }
 
     return errorService;
@@ -463,7 +510,9 @@ function InfoService($http, error) {
     infoService.register = function (r, callback) {
         $http
             .post('/register/register', r)
-            .then(callback);
+            .then(function (data) {
+                callback(data.data);
+            });
     }
 
     return infoService;

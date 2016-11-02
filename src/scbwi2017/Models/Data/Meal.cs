@@ -17,4 +17,5 @@ namespace scbwi2017.Models.Data
         Lunch,
         Dinner
     }
+
 }

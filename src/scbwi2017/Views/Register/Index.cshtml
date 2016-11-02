@@ -214,6 +214,7 @@
                 <md-card-content>
                     <h3>Will you be taking the bus friday night?</h3>
                     <md-input-container>
+                        <label>Select One</label>
                         <md-select ng-model="main.reg.takingbus" required name="takingbus" aria-label="are you taking the bus">
                             <md-option value="true">Yes</md-option>
                             <md-option value="false">No</md-option>
@@ -362,6 +363,33 @@
                             data-button_disabled="false"></script>
                 </md-card-actions>
             </md-card>
+            <md-card ng-show="mainapp.step === 7" class="fade">
+                <md-card-title>
+                    <md-card-title-text>
+                        <h3>Congratulations!</h3>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    Your registration has been successfully processed! We look forward to seeing you at the conference.
+                </md-card-content>
+            </md-card>
         </form>
     </md-content>
+</div>
+
+<div style="visibility: hidden;">
+    <div class="md-dialog-container" id="loading">
+        <md-dialog layout-padding>
+            <md-dialog-content style="width: 240px; height: 240px;" layout-padding layout-fill layout="column">
+                <div layout-align="center center" layout="column" layout-fill>
+                    <div>
+                        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                    </div>
+                    <div style="margin-top: 50px;">
+                        <b>Processing...</b>
+                    </div>
+                </div>
+            </md-dialog-content>
+        </md-dialog>
+    </div>
 </div>

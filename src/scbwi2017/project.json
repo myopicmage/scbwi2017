@@ -6,6 +6,7 @@
       "version": "1.0.1",
       "type": "platform"
     },
+    "Microsoft.AspNet.WebApi.Client": "5.2.3",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.0.0",
@@ -41,7 +42,7 @@
     },
     "Microsoft.EntityFrameworkCore.Sqlite.Design": "1.0.1",
     "Microsoft.EntityFrameworkCore.Sqlite": "1.0.1",
-    "Braintree": "3.0.1"
+    "Braintree": "3.0.1",
   },
 
   "tools": {

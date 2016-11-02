@@ -8,6 +8,6 @@ namespace scbwi2017.Services
     public class Secrets
     {
         public string paypaltoken { get; set; }
-        public string environ { get; set; }
+        public string sendgridkey { get; set; }
     }
 }
