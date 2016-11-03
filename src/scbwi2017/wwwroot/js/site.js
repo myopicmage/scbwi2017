@@ -40,6 +40,7 @@ function AppController(menu, $scope, error) {
     self.isMember = menu.getMember();
     self.allowSunday = menu.getSunday();
     self.friday = menu.getFriday();
+    self.isadmin = menu.getAdmin();
 
     menu.subscribe($scope, function () {
         self.step = menu.getStep();
@@ -55,6 +56,10 @@ function AppController(menu, $scope, error) {
 
     menu.subscribeFriday($scope, function () {
         self.friday = menu.getFriday();
+    });
+
+    menu.subscribeAdmin($scope, function () {
+        self.isadmin = menu.getAdmin();
     });
 
     error.subscribe($scope, function (type, text) {
@@ -317,6 +322,7 @@ function MenuService($rootScope) {
     menuService.isMember = true;
     menuService.allowSunday = true;
     menuService.friday = true;
+    menuService.admin = false;
 
     menuService.getStep = function () {
         return menuService.step;
@@ -333,6 +339,15 @@ function MenuService($rootScope) {
     menuService.getFriday = function () {
         return menuService.friday;
     }
+
+    menuService.getAdmin = function () {
+        return menuService.admin;
+    }
+
+    menuService.setAdmin = function () {
+        menuService.admin = true;
+        $rootScope.$emit('admin-event');
+    };
 
     menuService.setStep = function (newstep) {
         menuService.step = newstep;
@@ -371,6 +386,11 @@ function MenuService($rootScope) {
 
     menuService.subscribeFriday = function (scope, callback) {
         var handler = $rootScope.$on('friday-event', callback);
+        scope.$on('$destroy', handler);
+    }
+
+    menuService.subscribeAdmin = function (scope, callback) {
+        var handler = $rootScope.$on('admin-event', callback);
         scope.$on('$destroy', handler);
     }
 
@@ -518,11 +538,171 @@ function InfoService($http, error) {
     return infoService;
 }
 
+function PhoneDirective() {
+    return {
+        require: 'ngModel',
+        link: function (scope, elm, attrs, ctrl) {
+            ctrl.$validators.integer = function (modelValue, viewValue) {
+                return modelValue.match(/\d/g).length === 10;
+            };
+        }
+    };
+}
+
+function AdminCtrl($http, menu) {
+    var self = this;
+
+    menu.setAdmin();
+
+    self.newregtype = false;
+    self.newcomprehensive = false;
+    self.newmeal = false;
+
+    self.getregtypes = function () {
+        $http.get('/admin/regtypes')
+            .then(function (data) {
+                self.regtypes = data.data;
+            },
+                function (data) {
+                    console.log(data);
+                });
+    }
+
+    self.getComprehensives = function () {
+        $http.get('/admin/comprehensives')
+            .then(function (data) {
+                self.comprehensives = data.data;
+            },
+                function (data) {
+                    console.log(data);
+                });
+    };
+
+    self.getMeals = function () {
+        $http.get('/admin/meals')
+            .then(function (data) {
+                self.meals = data.data;
+            },
+                function (data) {
+                    console.log(data)
+                });
+    }
+
+    self.deleteRegType = function (id) {
+
+    }
+
+    self.deleteComprehensive = function (id) {
+
+    }
+
+    self.deleteMeal = function (id) {
+
+    }
+
+    self.createregtype = function (save) {
+        self.newregloading = true;
+
+        if (!save) {
+            self.newregtype = !self.newregtype;
+            self.newreg = {};
+            self.newregloading = false;
+
+            return;
+        }
+
+        $http.post('/admin/regtypes', self.newreg)
+            .then(function (data) {
+                if (data.data.success) {
+                    self.newregtype = !self.newregtype;
+                    self.newreg = {};
+                    self.getregtypes();
+                } else {
+                    // uh oh
+                }
+
+                self.newregloading = false;
+            },
+                function (data) {
+                    //uh oh
+                    self.newregloading = false;
+                });
+    }
+
+    self.createregtype = function (save) {
+        self.newcloading = true;
+
+        if (!save) {
+            self.newcomprehensive = !self.newcomprehensive;
+            self.newc = {};
+            self.newcloading = false;
+
+            return;
+        }
+
+        $http.post('/admin/regtypes', self.newreg)
+            .then(function (data) {
+                if (data.data.success) {
+                    self.newcomprehensive = !self.newcomprehensive;
+                    self.newc = {};
+                    self.getComprehensives();
+                } else {
+                    // uh oh
+                }
+
+                self.newcloading = false;
+            },
+                function (data) {
+                    //uh oh
+                    self.newcloading = false;
+                });
+
+
+    }
+
+    self.createregtype = function (save) {
+        self.newmloading = true;
+
+        if (!save) {
+            self.newmeal = !self.newmeal;
+            self.newm = {};
+            self.newmloading = false;
+
+            return;
+        }
+
+        $http.post('/admin/meals', self.newm)
+            .then(function (data) {
+                if (data.data.success) {
+                    self.newmeal = !self.newmeal;
+                    self.newm = {};
+                    self.getMeals();
+                } else {
+                    // uh oh
+                }
+
+                self.newmloading = false;
+            },
+                function (data) {
+                    //uh oh
+                    self.newmloading = false;
+                });
+
+
+    }
+
+    self.getregtypes();
+    self.getComprehensives();
+    self.getMeals();
+}
+
+app.directive('phone', PhoneDirective);
 app.factory('menu', MenuService);
 app.factory('info', InfoService);
 app.factory('error', ErrorService);
 app.controller('AppCtrl', AppController);
 app.controller('RegCtrl', RegController);
+app.controller('AdminCtrl', AdminCtrl);
 
 Array.prototype.single = function (func) {
     var temp = this.filter(func);

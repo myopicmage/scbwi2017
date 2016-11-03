@@ -46,3 +46,10 @@ td {
 .failure {
     color: red;
 }
+
+th {
+    font-weight: bold;
+    border-bottom: 1px solid #ececec;
+    text-align: left;
+    padding: 10px;
+}

@@ -31,7 +31,20 @@ namespace scbwi2017.Controllers
 
         public IActionResult Index() => View();
 
-        public IActionResult GetToken() => Json(_gateway.ClientToken.generate());
+        public IActionResult GetToken()
+        {
+            try
+            {
+                var token = _gateway.ClientToken.generate();
+                
+                return Json(token);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical($"Failed to generate token! {ex.Message}");
+                throw;
+            }
+        }
 
         public IActionResult RegTypes([FromBody] bool member)
         {

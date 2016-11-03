@@ -3,7 +3,7 @@
 
   "dependencies": {
     "Microsoft.NETCore.App": {
-      "version": "1.0.1",
+      "version": "1.0.0",
       "type": "platform"
     },
     "Microsoft.AspNet.WebApi.Client": "5.2.3",

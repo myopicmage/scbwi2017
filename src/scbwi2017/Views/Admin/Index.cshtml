@@ -1,56 +1,418 @@
-﻿<table>
-    <tbody>
-        <tr>
-            <td><b>Name</b></td>
-            <td>{flat.firstname} {flat.lastname}</td>
-            <td><b>Registration Chosen</b></td>
-            <td>{flat.registrationtype}</td>
-        </tr>
-        <tr>
-            <td><b>Address</b></td>
-            <td>
-                {flat.address1}<br />
-                {flat.address2}<br />
-                {flat.city}, {flat.state} {flat.postalcode}<br />
-            </td>
-            <td><b>Comprehensive Chosen:</b></td>
-            <td>{flat.comprehensive}</td>
-        </tr>
-        <tr>
-            <td><b>Email:</b></td>
-            <td>{flat.Email}</td>
-            <td><b>Workshops Chosen:</b></td>
-            <td>
-                {flat.first_workshop}<br />
-                {flat.second_workshop}
-            </td>
-        </tr>
-        <tr>
-            <td><b>Phone:</b></td>
-            <td>{flat.phone}</td>
-            <td><b>Critiques requested:</b></td>
-            <td>
-                Manuscript: {flat.manuscript}<br />
-                Portfolio: {flat.portfolio}<br />
-            </td>
-        </tr>
-        <tr>
-            <td><b>Saturday Night Dinner Chosen:</b></td>
-            <td>{flat.meal}</td>
-            <td><b>Are you taking the bus friday night?</b></td>
-            <td>{flat.takingbus}</td>
-        </tr>
-        <tr>
-            <td><b>Any extra Saturday Dinner Tickets?</b></td>
-            <td>{flat.satdinner}</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td><b>Subtotal:</b></td>
-            <td>{flat.subtotal}</td>
-            <td><b>Total:</b></td>
-            <td>{flat.total}</td>
-        </tr>
-    </tbody>
-</table>
+﻿@{
+    ViewData["Title"] = "Administration";
+}
+
+<div layout="column" flex ng-controller="AdminCtrl as main" class="main">
+    <md-toolbar class="md-toolbar md-hue-2">
+        <div class="md-toolbar-tools">
+            <h3 style="color: #353535">
+                Administration
+            </h3>
+        </div>
+    </md-toolbar>
+    <md-content layout="row" class="wide" layout-align="top start" flex="70" layout-padding md-scroll-y layout-fill>
+        <div layout="column" flex>
+            <md-card id="latest-reg" flex>
+                <md-card-title>
+                    <md-card-title-text>
+                        <h3>Latest Registrations</h3>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    hello
+                </md-card-content>
+            </md-card>
+            <md-card id="reg-types" flex>
+                <md-card-title>
+                    <md-card-title-text>
+                        <h3>Registration Types</h3>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    <form name="nrt" novalidate>
+                        <table class="wide">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th>Presenters</th>
+                                    <th>Regular Price</th>
+                                    <th>Late Price</th>
+                                    <th>Member</th>
+                                    <th>Comprehensive Only</th>
+                                    <th>Saturday Only</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="t in main.regtypes">
+                                    <td>{{t.title}}</td>
+                                    <td>{{t.description}}</td>
+                                    <td>{{t.presenters}}</td>
+                                    <td>{{t.earlyprice | currency : "$" : 2}}</td>
+                                    <td>{{t.lateprice | currency : "$" :2}}</td>
+                                    <td>{{t.ismember === true ? "Yes" : "No"}}</td>
+                                    <td>{{t.friday === true ? "Yes" : "No"}}</td>
+                                    <td>{{t.saturday === true ? "Yes" : "No"}}</td>
+                                    <td>
+                                        <md-button class="md-raised md-warn" ng-click="main.deleteRegType(t.id)">
+                                            <md-icon>delete</md-icon> Delete
+                                        </md-button>
+                                    </td>
+                                    <td>
+                                        <md-button class="md-raised" ng-disabled="true" style="visibility: hidden;">
+                                            <md-icon>edit</md-icon> Edit
+                                        </md-button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="!main.newregtype">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <md-button class="md-raised" ng-click="main.newregtype = !main.newregtype;">
+                                            <md-icon>create</md-icon> New
+                                        </md-button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="main.newregtype">
+                                    <td>
+                                        <md-input-container>
+                                            <label>Title</label>
+                                            <input type="text" ng-model="main.newreg.title" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-input-container>
+                                            <label>Description</label>
+                                            <input type="text" ng-model="main.newreg.description" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-input-container>
+                                            <label>Presenters</label>
+                                            <input type="text" ng-model="main.newreg.presenters" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-input-container>
+                                            <label>Price</label>
+                                            <input type="text" ng-model="main.newreg.earlyprice" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-input-container>
+                                            <label>Late Price</label>
+                                            <input type="text" ng-model="main.newreg.lateprice" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-checkbox ng-model="main.newreg.ismember">
+                                        </md-checkbox>
+                                    </td>
+                                    <td>
+                                        <md-checkbox ng-model="main.newreg.friday">
+                                        </md-checkbox>
+                                    </td>
+                                    <td>
+                                        <md-checkbox ng-model="main.newreg.saturday">
+                                        </md-checkbox>
+                                    </td>
+                                    <td ng-hide="main.newregloading">
+                                        <md-button class="md-raised md-warn" ng-disabled="main.newregloading" ng-click="main.createregtype(false)">
+                                            <md-icon>delete</md-icon>
+                                            Cancel
+                                        </md-button>
+                                    </td>
+                                    <td ng-hide="main.newregloading">
+                                        <md-button class="md-raised md-primary" ng-disabled="!nrt.$valid" ng-click="main.createregtype(true)">
+                                            <md-icon>create</md-icon>
+                                            Save
+                                        </md-button>
+                                    </td>
+                                    <td ng-show="main.newregloading">
+                                        <md-progress-circular md-mode="indeterminate" ng-show="main.newregloading"></md-progress-circular>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </md-card-content>
+            </md-card>
+            <md-card id="comprehensives" flex>
+                <md-card-title>
+                    <md-card-title-text>
+                        <h3>Comprehensives</h3>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    <form name="nc" novalidate>
+                        <table class="wide">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th>Price</th>
+                                    <th>Max Attendees</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="c in main.comprehensives">
+                                    <td>{{c.title}}</td>
+                                    <td>{{c.description}}</td>
+                                    <td>{{c.price | currency : "$" : 2}}</td>
+                                    <td>{{c.maxattendees}}</td>
+                                    <td>
+                                        <md-button class="md-raised md-warn" ng-click="main.deleteComprehensive(c.id)">
+                                            <md-icon>delete</md-icon> Delete
+                                        </md-button>
+                                    </td>
+                                    <td>
+                                        <md-button class="md-raised" ng-disabled="true" style="visibility: hidden;">
+                                            <md-icon>edit</md-icon> Edit
+                                        </md-button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="!main.newcomprehensive">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <md-button class="md-raised" ng-click="main.newcomprehensive = !main.newcomprehensive;">
+                                            <md-icon>create</md-icon> New
+                                        </md-button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="main.newcomprehensive">
+                                    <td>
+                                        <md-input-container>
+                                            <label>Title</label>
+                                            <input type="text" ng-model="main.newc.title" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-input-container>
+                                            <label>Description</label>
+                                            <input type="text" ng-model="main.newc.description" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-input-container>
+                                            <label>Price</label>
+                                            <input type="text" ng-model="main.newc.price" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-input-container>
+                                            <label>Max Attendees</label>
+                                            <input type="text" ng-model="main.newc.maxattendees" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td ng-hide="main.newcloading">
+                                        <md-button class="md-raised md-warn" ng-disabled="main.newcloading" ng-click="main.createcomprehensive(false)">
+                                            <md-icon>delete</md-icon>
+                                            Cancel
+                                        </md-button>
+                                    </td>
+                                    <td ng-hide="main.newcloading">
+                                        <md-button class="md-raised md-primary" ng-disabled="!nc.$valid" ng-click="main.createcomprehensive(true)">
+                                            <md-icon>create</md-icon>
+                                            Save
+                                        </md-button>
+                                    </td>
+                                    <td ng-show="main.newcloading">
+                                        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </md-card-content>
+            </md-card>
+            <md-card id="meals" flex>
+                <md-card-title>
+                    <md-card-title-text>
+                        <h3>Meals</h3>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    <form name="nm" novalidate>
+                        <table class="wide">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="m in main.meals">
+                                    <td>{{m.title}}</td>
+                                    <td>{{m.description}}</td>
+                                    <td>
+                                        <md-button class="md-raised md-warn" ng-click="main.deleteMeal(m.id)">
+                                            <md-icon>delete</md-icon> Delete
+                                        </md-button>
+                                    </td>
+                                    <td>
+                                        <md-button class="md-raised" ng-disabled="true" style="visibility: hidden;">
+                                            <md-icon>edit</md-icon> Edit
+                                        </md-button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="!main.newcomprehensive">
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <md-button class="md-raised" ng-click="main.newmeal = !main.newmeal;">
+                                            <md-icon>create</md-icon> New
+                                        </md-button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="main.newmeal">
+                                    <td>
+                                        <md-input-container>
+                                            <label>Title</label>
+                                            <input type="text" ng-model="main.newm.title" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-input-container>
+                                            <label>Description</label>
+                                            <input type="text" ng-model="main.newm.description" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td ng-hide="main.newmloading">
+                                        <md-button class="md-raised md-warn" ng-disabled="main.newmloading" ng-click="main.createmeal(false)">
+                                            <md-icon>delete</md-icon>
+                                            Cancel
+                                        </md-button>
+                                    </td>
+                                    <td ng-hide="main.newmloading">
+                                        <md-button class="md-raised md-primary" ng-disabled="!nm.$valid" ng-click="main.createmeal(true)">
+                                            <md-icon>create</md-icon>
+                                            Save
+                                        </md-button>
+                                    </td>
+                                    <td ng-show="main.newmloading">
+                                        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </md-card-content>
+            </md-card>
+            <md-card id="workshops" flex>
+                <md-card-title>
+                    <md-card-title-text>
+                        <h3>
+                            Workshops
+                        </h3>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    <form name="nw" novalidate>
+                        <table class="wide">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th>Presenters</th>
+                                    <th>Max Attendees</th>
+                                    <td>Time</td>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="w in main.workshops">
+                                    <td>{{w.title}}</td>
+                                    <td>{{w.description}}</td>
+                                    <td>{{w.presenters}}</td>
+                                    <td>{{w.maxattendees}}</td>
+                                    <td>{{w.time === 0 ? "First Session" : "Second Session"}}</td>
+                                    <td>
+                                        <md-button class="md-raised md-warn" ng-click="main.deleteWorkshop(w.id)">
+                                            <md-icon>delete</md-icon> Delete
+                                        </md-button>
+                                    </td>
+                                    <td>
+                                        <md-button class="md-raised" ng-disabled="true" style="visibility: hidden;">
+                                            <md-icon>edit</md-icon> Edit
+                                        </md-button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="!main.newworkshop">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <md-button class="md-raised" ng-click="main.newworkshop = !main.newworkshop;">
+                                            <md-icon>create</md-icon> New
+                                        </md-button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="main.newworkshop">
+                                    <td>
+                                        <md-input-container>
+                                            <label>Title</label>
+                                            <input type="text" ng-model="main.neww.title" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-input-container>
+                                            <label>Description</label>
+                                            <input type="text" ng-model="main.neww.description" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-input-container>
+                                            <label>Presenters</label>
+                                            <input type="text" ng-model="main.neww.presenters" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-input-container>
+                                            <label>Max Attendees</label>
+                                            <input type="text" ng-model="main.newc.maxattendees" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-select></md-select>
+                                    </td>
+                                    <td ng-hide="main.newcloading">
+                                        <md-button class="md-raised md-warn" ng-disabled="main.newcloading" ng-click="main.createcomprehensive(false)">
+                                            <md-icon>delete</md-icon>
+                                            Cancel
+                                        </md-button>
+                                    </td>
+                                    <td ng-hide="main.newcloading">
+                                        <md-button class="md-raised md-primary" ng-disabled="!nc.$valid" ng-click="main.createcomprehensive(true)">
+                                            <md-icon>create</md-icon>
+                                            Save
+                                        </md-button>
+                                    </td>
+                                    <td ng-show="main.newcloading">
+                                        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </md-card-content>
+            </md-card>
+        </div>
+    </md-content>
+</div>

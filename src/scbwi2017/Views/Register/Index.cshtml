@@ -37,7 +37,7 @@
                         Please provide some basic information
                     </md-card-title-text>
                 </md-card-title>
-                <md-card-content layout-wrap>
+                <md-card-content layout-wrap layout="row">
                     <md-input-container>
                         <label>First Name</label>
                         <input ng-model="main.reg.user.first" required name="first" />
@@ -54,16 +54,18 @@
                     </md-input-container>
                     <md-input-container>
                         <label>Email</label>
-                        <input ng-model="main.reg.user.email" required name="email" />
+                        <input ng-model="main.reg.user.email" required name="email" type="email" ng-pattern="/^.+@@.+\..+$/" />
                         <div ng-messages="regform.email.$error">
-                            <div ng-message="required">You must enter a valid email address.</div>
+                            <div ng-message="required">You must enter an email address.</div>
+                            <div ng-message="pattern">You must enter a valid email address.</div>
                         </div>
                     </md-input-container>
                     <md-input-container>
                         <label>Phone</label>
-                        <input ng-model="main.reg.user.phone" required name="phone" />
-                        <div ng-messages="regform.phone.$error">
-                            <div ng-message="required">You must enter a valid phone.</div>
+                        <input ng-model="main.reg.user.phone" required name="phonenum" type="tel" phone />
+                        <div ng-messages="regform.phonenum.$error">
+                            <div ng-message="required">You must enter a phone number.</div>
+                            <div ng-message="phone">You must enter a valid, 10 digit phone number.</div>
                         </div>
                     </md-input-container>
                     <md-input-container>
@@ -110,7 +112,10 @@
                     </md-input-container>
                 </md-card-content>
                 <md-card-actions layout="row" layout-align="end center">
-                    <md-button class="md-raised md-primary" ng-click="main.userInfo()" @*ng-disabled="!regform.$valid" *@>
+                    <md-button class="md-raised md-primary" ng-click="main.userInfo()"
+                               ng-disabled="!regform.first.$valid && !regform.last.$valid && !regform.email.$valid && !regform.phonenum.$valid &&
+                                            !regform.country.$valid && !regform.address1.$valid && !regform.city.$valid && !regform.state.$valid &&
+                                            !regform.zip.$valid">
                         <md-icon>done</md-icon> Continue
                     </md-button>
                 </md-card-actions>

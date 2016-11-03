@@ -6,7 +6,7 @@
     <title>@ViewData["Title"] - SCBWI Florida 2017</title>
 
     <environment names="Development">
-        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="~/lib/angular-material/angular-material.css" />
     </environment>
@@ -17,7 +17,7 @@
     </environment>
 </head>
 <body layout="row" ng-controller="AppCtrl as mainapp">
-    <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
+    <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')" ng-hide="mainapp.isadmin">
         <md-toolbar class="md-toolbar md-hue-3">
             <h1 class="md-toolbar-tools">SCBWI Florida</h1>
         </md-toolbar>
@@ -138,6 +138,26 @@
         </md-list>
     </md-sidenav>
 
+    <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')" ng-show="mainapp.isadmin">
+        <md-toolbar class="md-toolbar md-hue-3">
+            <h1 class="md-toolbar-tools">SCBWI Florida</h1>
+        </md-toolbar>
+        <md-list class="left-menu">
+            <md-subheader>Admin Tools</md-subheader>
+            <md-list-item>
+                <a>
+                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                        <div class="inset">
+                            <md-button class="md-primary md-raised">
+                                <md-icon>file_download</md-icon> Download Report
+                            </md-button>
+                        </div>
+                    </md-item-content>
+                </a>
+            </md-list-item>
+        </md-list>
+    </md-sidenav>
+
     @RenderBody()
 
     <environment names="Development">
@@ -148,6 +168,7 @@
         <script src="~/lib/angular-material/angular-material.js"></script>
         <script src="~/lib/braintree-web/client.js"></script>
         <script src="~/lib/braintree-web/paypal.js"></script>
+        @RenderSection("scripts", required: false)
         <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
     <environment names="Staging,Production">
@@ -158,9 +179,9 @@
         <script src="~/lib/angular-material/angular-material.min.js"></script>
         <script src="~/lib/braintree-web/client.js"></script>
         <script src="~/lib/braintree-web/paypal.js"></script>
+        @RenderSection("scripts", required: false)
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 
-    @RenderSection("scripts", required: false)
 </body>
 </html>
