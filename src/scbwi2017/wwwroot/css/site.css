@@ -53,3 +53,7 @@ th {
     text-align: left;
     padding: 10px;
 }
+
+.md-toolbar-tools h3 {
+    color: #353535;
+}

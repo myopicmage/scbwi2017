@@ -6,29 +6,29 @@
     <md-toolbar class="md-toolbar md-hue-2">
         <div class="md-toolbar-tools">
             <h3 style="color: #353535">
-                Administration
+                Administration (user: @User.Identity.Name)
             </h3>
         </div>
     </md-toolbar>
-    <md-content layout="row" class="wide" layout-align="top start" flex="70" layout-padding md-scroll-y layout-fill>
+    <md-content layout="row" class="wide" layout-align="top start" flex="70" layout-padding layout-fill>
         <div layout="column" flex>
             <md-card id="latest-reg" flex>
-                <md-card-title>
-                    <md-card-title-text>
+                <md-toolbar class="md-hue-2" ng-click="main.showreg = !main.showreg">
+                    <div class="md-toolbar-tools">
                         <h3>Latest Registrations</h3>
-                    </md-card-title-text>
-                </md-card-title>
-                <md-card-content>
+                    </div>
+                </md-toolbar>
+                <md-card-content ng-hide="main.showreg">
                     hello
                 </md-card-content>
             </md-card>
             <md-card id="reg-types" flex>
-                <md-card-title>
-                    <md-card-title-text>
+                <md-toolbar class="md-hue-2" ng-click="main.showtype = !main.showtype">
+                    <div class="md-toolbar-tools">
                         <h3>Registration Types</h3>
-                    </md-card-title-text>
-                </md-card-title>
-                <md-card-content>
+                    </div>
+                </md-toolbar>
+                <md-card-content ng-hide="main.showtype">
                     <form name="nrt" novalidate>
                         <table class="wide">
                             <thead>
@@ -54,7 +54,7 @@
                                     <td>{{t.lateprice | currency : "$" :2}}</td>
                                     <td>{{t.ismember === true ? "Yes" : "No"}}</td>
                                     <td>{{t.friday === true ? "Yes" : "No"}}</td>
-                                    <td>{{t.saturday === true ? "Yes" : "No"}}</td>
+                                    <td>{{t.sunday === false ? "Yes" : "No"}}</td>
                                     <td>
                                         <md-button class="md-raised md-warn" ng-click="main.deleteRegType(t.id)">
                                             <md-icon>delete</md-icon> Delete
@@ -121,7 +121,7 @@
                                         </md-checkbox>
                                     </td>
                                     <td>
-                                        <md-checkbox ng-model="main.newreg.saturday">
+                                        <md-checkbox ng-model="main.newreg.allowsworkshops">
                                         </md-checkbox>
                                     </td>
                                     <td ng-hide="main.newregloading">
@@ -146,12 +146,12 @@
                 </md-card-content>
             </md-card>
             <md-card id="comprehensives" flex>
-                <md-card-title>
-                    <md-card-title-text>
+                <md-toolbar class="md-hue-2" ng-click="main.showcomp = !main.showcomp">
+                    <div class="md-toolbar-tools">
                         <h3>Comprehensives</h3>
-                    </md-card-title-text>
-                </md-card-title>
-                <md-card-content>
+                    </div>
+                </md-toolbar>
+                <md-card-content ng-hide="main.showcomp">
                     <form name="nc" novalidate>
                         <table class="wide">
                             <thead>
@@ -239,12 +239,12 @@
                 </md-card-content>
             </md-card>
             <md-card id="meals" flex>
-                <md-card-title>
-                    <md-card-title-text>
+                <md-toolbar class="md-hue-2" ng-click="main.showmeals = !main.showmeals">
+                    <div class="md-toolbar-tools">
                         <h3>Meals</h3>
-                    </md-card-title-text>
-                </md-card-title>
-                <md-card-content>
+                    </div>
+                </md-toolbar>
+                <md-card-content ng-hide="main.showmeals">
                     <form name="nm" novalidate>
                         <table class="wide">
                             <thead>
@@ -314,23 +314,23 @@
                 </md-card-content>
             </md-card>
             <md-card id="workshops" flex>
-                <md-card-title>
-                    <md-card-title-text>
+                <md-toolbar class="md-hue-2" ng-click="main.showwork = !main.showwork">
+                    <div class="md-toolbar-tools">
                         <h3>
                             Workshops
                         </h3>
-                    </md-card-title-text>
-                </md-card-title>
-                <md-card-content>
+                    </div>
+                </md-toolbar>
+                <md-card-content ng-hide="main.showwork">
                     <form name="nw" novalidate>
                         <table class="wide">
                             <thead>
                                 <tr>
-                                    <th>Title</th>
-                                    <th>Description</th>
-                                    <th>Presenters</th>
-                                    <th>Max Attendees</th>
-                                    <td>Time</td>
+                                    <th>title</th>
+                                    <th>description</th>
+                                    <th>presenters</th>
+                                    <th>max attendees</th>
+                                    <td>time</td>
                                     <th></th>
                                     <th></th>
                                 </tr>
@@ -341,15 +341,15 @@
                                     <td>{{w.description}}</td>
                                     <td>{{w.presenters}}</td>
                                     <td>{{w.maxattendees}}</td>
-                                    <td>{{w.time === 0 ? "First Session" : "Second Session"}}</td>
+                                    <td>{{w.time === 0 ? "first session" : "second session"}}</td>
                                     <td>
-                                        <md-button class="md-raised md-warn" ng-click="main.deleteWorkshop(w.id)">
-                                            <md-icon>delete</md-icon> Delete
+                                        <md-button class="md-raised md-warn" ng-click="main.deleteworkshop(w.id)">
+                                            <md-icon>delete</md-icon> delete
                                         </md-button>
                                     </td>
                                     <td>
                                         <md-button class="md-raised" ng-disabled="true" style="visibility: hidden;">
-                                            <md-icon>edit</md-icon> Edit
+                                            <md-icon>edit</md-icon> edit
                                         </md-button>
                                     </td>
                                 </tr>
@@ -358,53 +358,181 @@
                                     <td></td>
                                     <td></td>
                                     <td></td>
+                                    <td></td>
                                     <td>
                                         <md-button class="md-raised" ng-click="main.newworkshop = !main.newworkshop;">
-                                            <md-icon>create</md-icon> New
+                                            <md-icon>create</md-icon> new
                                         </md-button>
                                     </td>
                                 </tr>
                                 <tr ng-show="main.newworkshop">
                                     <td>
                                         <md-input-container>
-                                            <label>Title</label>
+                                            <label>title</label>
                                             <input type="text" ng-model="main.neww.title" required />
                                         </md-input-container>
                                     </td>
                                     <td>
                                         <md-input-container>
-                                            <label>Description</label>
+                                            <label>description</label>
                                             <input type="text" ng-model="main.neww.description" required />
                                         </md-input-container>
                                     </td>
                                     <td>
                                         <md-input-container>
-                                            <label>Presenters</label>
+                                            <label>presenters</label>
                                             <input type="text" ng-model="main.neww.presenters" required />
                                         </md-input-container>
                                     </td>
                                     <td>
                                         <md-input-container>
-                                            <label>Max Attendees</label>
-                                            <input type="text" ng-model="main.newc.maxattendees" required />
+                                            <label>max attendees</label>
+                                            <input type="text" ng-model="main.neww.maxattendees" required />
                                         </md-input-container>
                                     </td>
                                     <td>
-                                        <md-select></md-select>
+                                        <md-input-container>
+                                            <label>select one</label>
+                                            <md-select ng-model="main.neww.time" required>
+                                                <md-option value="0">first</md-option>
+                                                <md-option value="1">second</md-option>
+                                            </md-select>
+                                        </md-input-container>
                                     </td>
-                                    <td ng-hide="main.newcloading">
-                                        <md-button class="md-raised md-warn" ng-disabled="main.newcloading" ng-click="main.createcomprehensive(false)">
+                                    <td ng-hide="main.newwloading">
+                                        <md-button class="md-raised md-warn" ng-disabled="main.newwloading" ng-click="main.createworkshop(false)">
                                             <md-icon>delete</md-icon>
-                                            Cancel
+                                            cancel
                                         </md-button>
                                     </td>
-                                    <td ng-hide="main.newcloading">
-                                        <md-button class="md-raised md-primary" ng-disabled="!nc.$valid" ng-click="main.createcomprehensive(true)">
+                                    <td ng-hide="main.newwloading">
+                                        <md-button class="md-raised md-primary" ng-disabled="!nw.$valid" ng-click="main.createworkshop(true)">
                                             <md-icon>create</md-icon>
-                                            Save
+                                            save
                                         </md-button>
                                     </td>
-                                    <td ng-show="main.newcloading">
+                                    <td ng-show="main.newwloading">
+                                        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </md-card-content>
+            </md-card>
+            <md-card id="prices" flex>
+                <md-toolbar class="md-hue-2" ng-click="main.showmisc = !main.showmisc">
+                    <div class="md-toolbar-tools">
+                        <h3>
+                            Misc
+                        </h3>
+                    </div>
+                </md-toolbar>
+                <md-card-content ng-hide="main.showmisc">
+                    <form name="np" novalidate>
+                        <div layout="row">
+                            <md-input-container>
+                                <label>Manuscript Critique Price</label>
+                                <input ng-model="main.manuscript" />
+                            </md-input-container>
+                            <md-input-container>
+                                <label>Portfolio Review Price</label>
+                                <input ng-model="main.portfolio" />
+                            </md-input-container>
+                            <md-input-container>
+                                <label>Satuday Dinner Price</label>
+                                <input ng-model="main.satdinner" />
+                            </md-input-container>
+                            <md-input-container>
+                                <label>Late Registration Date</label>
+                                <md-datepicker ng-model="main.latedate" md-placeholder="Late Registration Date"></md-datepicker>
+                            </md-input-container>
+                        </div>
+                    </form>
+                </md-card-content>
+            </md-card>
+            <md-card id="coupons" flex>
+                <md-toolbar class="md-hue-2" ng-click="main.showcoupons = !main.showcoupons">
+                    <div class="md-toolbar-tools">
+                        <h3>
+                            Coupons
+                        </h3>
+                    </div>
+                </md-toolbar>
+                <md-card-content ng-hide="main.showcoupons">
+                    <form name="nco" novalidate>
+                        <table class="wide">
+                            <thead>
+                                <tr>
+                                    <th>Text</th>
+                                    <th>Type</th>
+                                    <th>Value</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="x in main.coupons">
+                                    <td>{{x.text}}</td>
+                                    <td>{{main.matchtype(x.type)}}</td>
+                                    <td>{{x.value}}</td>
+                                    <td>
+                                        <md-button class="md-raised md-warn" ng-click="main.deletecoupon(x.id)">
+                                            <md-icon>delete</md-icon> delete
+                                        </md-button>
+                                    </td>
+                                    <td>
+                                        <md-button class="md-raised" ng-disabled="true" style="visibility: hidden;">
+                                            <md-icon>edit</md-icon> edit
+                                        </md-button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="!main.newcoupon">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <md-button class="md-raised" ng-click="main.newcoupon = !main.newcoupon;">
+                                            <md-icon>create</md-icon> new
+                                        </md-button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="main.newcoupon">
+                                    <td>
+                                        <md-input-container>
+                                            <label>Text</label>
+                                            <input type="text" ng-model="main.newco.text" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-input-container>
+                                            <label>Type</label>
+                                            <md-select ng-model="main.newco.type" required>
+                                                <md-option value="0">Percentage (x% off)</md-option>
+                                                <md-option value="1">Reduction (-$x)</md-option>
+                                                <md-option value="2">Set Price (free or flat fee)</md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                    </td>
+                                    <td>
+                                        <md-input-container>
+                                            <label>Value</label>
+                                            <input type="text" ng-model="main.newco.value" required />
+                                        </md-input-container>
+                                    </td>
+                                    <td ng-hide="main.newcoloading">
+                                        <md-button class="md-raised md-warn" ng-disabled="main.newcoloading" ng-click="main.createcoupon(false)">
+                                            <md-icon>delete</md-icon>
+                                            cancel
+                                        </md-button>
+                                    </td>
+                                    <td ng-hide="main.newcoloading">
+                                        <md-button class="md-raised md-primary" ng-disabled="!nco.$valid" ng-click="main.createcoupon(true)">
+                                            <md-icon>create</md-icon>
+                                            save
+                                        </md-button>
+                                    </td>
+                                    <td ng-show="main.newcoloading">
                                         <md-progress-circular md-mode="indeterminate"></md-progress-circular>
                                     </td>
                                 </tr>

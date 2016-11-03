@@ -584,7 +584,49 @@ function AdminCtrl($http, menu) {
                 self.meals = data.data;
             },
                 function (data) {
-                    console.log(data)
+                    console.log(data);
+                });
+    }
+
+    self.getWorkshops = function () {
+        $http.get('/admin/workshops')
+            .then(function (data) {
+                self.workshops = data.data;
+            },
+                function (data) {
+                    console.log(data);
+                });
+    }
+
+    self.getPrices = function () {
+        $http.get('/admin/prices')
+            .then(function (data) {
+                for (var i = 0; i < data.data.length; i++) {
+                    self[data.data[i].type] = data.data[i].value;
+                }
+            },
+                function (data) {
+                    console.log(data);
+                });
+    }
+
+    self.getLateDate = function () {
+        $http.get('/admin/late')
+            .then(function (data) {
+                self.latedate = new Date(data.data.value);
+            },
+                function (data) {
+                    console.log(data);
+                });
+    }
+
+    self.getCoupons = function () {
+        $http.get('/admin/coupons')
+            .then(function (data) {
+                self.coupons = data.data;
+            },
+                function (data) {
+                    console.log(data);
                 });
     }
 
@@ -600,6 +642,10 @@ function AdminCtrl($http, menu) {
 
     }
 
+    self.deleteWorkshop = function (id) {
+
+    }
+
     self.createregtype = function (save) {
         self.newregloading = true;
 
@@ -610,6 +656,8 @@ function AdminCtrl($http, menu) {
 
             return;
         }
+
+        console.log(self.newreg);
 
         $http.post('/admin/regtypes', self.newreg)
             .then(function (data) {
@@ -629,7 +677,7 @@ function AdminCtrl($http, menu) {
                 });
     }
 
-    self.createregtype = function (save) {
+    self.createcomprehensive = function (save) {
         self.newcloading = true;
 
         if (!save) {
@@ -640,7 +688,7 @@ function AdminCtrl($http, menu) {
             return;
         }
 
-        $http.post('/admin/regtypes', self.newreg)
+        $http.post('/admin/comprehensives', self.newc)
             .then(function (data) {
                 if (data.data.success) {
                     self.newcomprehensive = !self.newcomprehensive;
@@ -660,7 +708,7 @@ function AdminCtrl($http, menu) {
 
     }
 
-    self.createregtype = function (save) {
+    self.createmeal = function (save) {
         self.newmloading = true;
 
         if (!save) {
@@ -687,13 +735,84 @@ function AdminCtrl($http, menu) {
                     //uh oh
                     self.newmloading = false;
                 });
+    }
 
+    self.createworkshop = function (save) {
+        self.newwloading = true;
 
+        if (!save) {
+            self.neww = !self.neww;
+            self.neww = {};
+            self.newwloading = false;
+
+            return;
+        }
+
+        $http.post('/admin/workshops', self.neww)
+            .then(function (data) {
+                if (data.data.success) {
+                    self.neww = !self.neww;
+                    self.neww = {};
+                    self.getWorkshops();
+                } else {
+                    // uh oh
+                }
+
+                self.newwloading = false;
+            },
+                function (data) {
+                    //uh oh
+                    self.newwloading = false;
+                });
+    }
+
+    self.createcoupon = function (save) {
+        self.newcoloading = true;
+
+        if (!save) {
+            self.newcoupon = !self.newcoupon;
+            self.newcoupon = {};
+            self.newcoloading = false;
+
+            return;
+        }
+
+        $http.post('/admin/workshops', self.newco)
+            .then(function (data) {
+                if (data.data.success) {
+                    self.newcoupon = !self.newcoupon;
+                    self.newcoupon = {};
+                    self.getCoupons();
+                } else {
+                    // uh oh
+                }
+
+                self.newcoloading = false;
+            },
+                function (data) {
+                    //uh oh
+                    self.newcoloading = false;
+                });
+    }
+
+    self.matchtype = function(id) {
+        switch (id) {
+            case 0:
+                return "Percentage";
+            case 1:
+                return "Reduction";
+            case 2:
+                return "Set Price";
+        }
     }
 
     self.getregtypes();
     self.getComprehensives();
     self.getMeals();
+    self.getWorkshops();
+    self.getPrices();
+    self.getLateDate();
+    self.getCoupons();
 }
 
 app.directive('phone', PhoneDirective);
