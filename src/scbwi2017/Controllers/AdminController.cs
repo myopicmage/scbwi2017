@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using scbwi2017.Data;
 using scbwi2017.Models;
 using scbwi2017.Models.Data;
@@ -29,24 +30,47 @@ namespace scbwi2017.Controllers
 
         public IActionResult Index() => View();
 
+        public IActionResult Registration() => View();
+
         public IActionResult RegTypes() => Json(_db.Types.ToList());
 
-        public async Task<IActionResult> MakeAdmin(string email)
+        public IActionResult Registrations() => View();
+
+        [HttpPost]
+        public IActionResult Registrations(bool frontPage)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var reg = _db.Registrations
+                .OrderBy(x => x.paid)
+                .Include(x => x.user)
+                .Include(x => x.Extras)
+                .Include(x => x.first)
+                .Include(x => x.second)
+                .Include(x => x.coupon)
+                .Include(x => x.meal)
+                .Include(x => x.type);
 
-            if (user == null) return Json(new {message = "not found"});
+            return frontPage ? Json(reg.Select(x => x.Flatten()).Take(10).ToList()) : Json(reg.Select(x => x.Flatten()).ToList());
+        }
 
-            var adminrole = _roleManager.Roles.SingleOrDefault(x => x.Name == "Admin");
+        [HttpPost]
+        public IActionResult Registration(int id)
+        {
+            var reg = _db.Registrations
+                .Include(x => x.user)
+                .Include(x => x.Extras)
+                .Include(x => x.first)
+                .Include(x => x.second)
+                .Include(x => x.coupon)
+                .Include(x => x.meal)
+                .Include(x => x.type)
+                .SingleOrDefault(x => x.id == id);
 
-            if (adminrole == null)
+            if (reg == null)
             {
-                await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                return Json(new { success = false, message = "not found"});
             }
 
-            var result = await _userManager.AddToRoleAsync(user, "Admin");
-
-            return Json(result);
+            return Json(new {success = true, data = reg.Flatten()});
         }
 
         [HttpPost]
@@ -54,7 +78,7 @@ namespace scbwi2017.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return Json(new {success = false});
+                return Json(new { success = false });
             }
 
             newreg.created = DateTime.Now;
@@ -80,10 +104,10 @@ namespace scbwi2017.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new {success = false, message = $"db error: {ex.Message}"});
+                return Json(new { success = false, message = $"db error: {ex.Message}" });
             }
 
-            return Json(new {success = true});
+            return Json(new { success = true });
         }
 
         public IActionResult Comprehensives()
@@ -94,7 +118,7 @@ namespace scbwi2017.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return Json(new {success = false});
+                return Json(new { success = false });
             }
 
             c.created = DateTime.Now;
@@ -111,10 +135,10 @@ namespace scbwi2017.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new {success = false, message = $"db error: {ex.Message}"});
+                return Json(new { success = false, message = $"db error: {ex.Message}" });
             }
 
-            return Json(new {success = true});
+            return Json(new { success = true });
         }
         public IActionResult Meals()
             => Json(_db.Meals.ToList());
@@ -124,7 +148,7 @@ namespace scbwi2017.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return Json(new {success = false});
+                return Json(new { success = false });
             }
 
             m.created = DateTime.Now;
@@ -140,10 +164,10 @@ namespace scbwi2017.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new {success = false, message = $"db error: {ex.Message}"});
+                return Json(new { success = false, message = $"db error: {ex.Message}" });
             }
 
-            return Json(new {success = true});
+            return Json(new { success = true });
         }
         public IActionResult Workshops()
             => Json(_db.Workshops.ToList());
@@ -153,7 +177,7 @@ namespace scbwi2017.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return Json(new {success = false});
+                return Json(new { success = false });
             }
 
             w.created = DateTime.Now;
@@ -168,10 +192,10 @@ namespace scbwi2017.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new {success = false, message = $"db error: {ex.Message}"});
+                return Json(new { success = false, message = $"db error: {ex.Message}" });
             }
 
-            return Json(new {success = true});
+            return Json(new { success = true });
         }
 
         public IActionResult Coupons()
@@ -182,7 +206,7 @@ namespace scbwi2017.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return Json(new {success = false});
+                return Json(new { success = false });
             }
 
             c.created = DateTime.Now;
@@ -197,10 +221,10 @@ namespace scbwi2017.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new {success = false, message = $"db error: {ex.Message}"});
+                return Json(new { success = false, message = $"db error: {ex.Message}" });
             }
 
-            return Json(new {success = true});
+            return Json(new { success = true });
         }
 
         public IActionResult Prices()
@@ -220,14 +244,14 @@ namespace scbwi2017.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return Json(new {success = false});
+                return Json(new { success = false });
             }
 
             var oldp = _db.Prices.SingleOrDefault(x => x.type == p.type);
 
             if (oldp == null)
             {
-                return Json(new {success = false, message = "old price not found"});
+                return Json(new { success = false, message = "old price not found" });
             }
 
             oldp.value = p.value;
@@ -240,10 +264,10 @@ namespace scbwi2017.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new {success = false, message = $"db error: {ex.Message}"});
+                return Json(new { success = false, message = $"db error: {ex.Message}" });
             }
 
-            return Json(new {success = true});
+            return Json(new { success = true });
         }
 
         public IActionResult Late() => Json(_db.Dates.SingleOrDefault(x => x.name == "late"));
@@ -253,14 +277,14 @@ namespace scbwi2017.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return Json(new {success = false});
+                return Json(new { success = false });
             }
 
             var old = _db.Dates.SingleOrDefault(x => x.name == "late");
 
             if (old == null)
             {
-                return Json(new {success = false, message = $"Late date not found, application error"});
+                return Json(new { success = false, message = $"Late date not found, application error" });
             }
 
             old.value = d;
@@ -271,10 +295,10 @@ namespace scbwi2017.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new {success = false, message = $"db error: {ex.Message}"});
+                return Json(new { success = false, message = $"db error: {ex.Message}" });
             }
 
-            return Json(new {success = true});
+            return Json(new { success = true });
         }
     }
 }

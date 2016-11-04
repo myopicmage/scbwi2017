@@ -620,6 +620,17 @@ function AdminCtrl($http, menu) {
                 });
     }
 
+    self.getRegistrations  = function() {
+        $http.post('/admin/registrations?frontPage=true')
+            .then(function(data) {
+                    console.log(data);
+                    self.registrations = data.data;
+                },
+                function(data) {
+                    console.log(data);
+                });
+    }
+
     self.deleteRegType = function (id) {
         $http.post('/admin/deletetype', id)
             .then(function (data) {
@@ -842,6 +853,7 @@ function AdminCtrl($http, menu) {
     self.getPrices();
     self.getLateDate();
     self.getCoupons();
+    self.getRegistrations();
 }
 
 app.directive('phone', PhoneDirective);

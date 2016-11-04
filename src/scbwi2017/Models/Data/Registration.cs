@@ -173,6 +173,8 @@ namespace scbwi2017.Models.Data
             total = r.total;
             Email = r.user.Email;
             satdinner = r.satdinner;
+            manuscript = r.manuscript;
+            portfolio = r.portfolio;
         }
     }
 }

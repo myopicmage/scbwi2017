@@ -19,7 +19,29 @@
                     </div>
                 </md-toolbar>
                 <md-card-content ng-hide="main.showreg">
-                    hello
+                    <div ng-repeat="r in main.registrations" layout="column" layout-wrap>
+                        <div flex>
+                            <b>Name:</b> {{r.firstname}} {{r.lastname}}
+                        </div>
+                        <div flex>
+                            <b>Address:</b> {{r.address1}}<br />
+                            {{r.address2}}<br ng-if="r.address2" />
+                            {{r.city}}, {{r.state}} {{r.postalcode}}
+                        </div>
+                        <div flex>
+                            <b>Email:</b> {{r.Email}}
+                        </div>
+                        <div flex>
+                            <b>Phone:</b> {{r.phone}}
+                        </div>
+                        <div flex>
+                            <b>Registration:</b> {{r.registrationtype}}
+                        </div>
+                        <div flex>
+                            <b>Manuscript Critiques:</b> {{r.manuscript}}<br />
+                            <b>Portfolio Reviews:</b> {{r.portfolio}}
+                        </div>
+                    </div>
                 </md-card-content>
             </md-card>
             <md-card id="reg-types" flex>
@@ -448,7 +470,7 @@
                             </md-input-container>
                             <md-input-container>
                                 <label>Portfolio Review Price</label>
-                                <input ng-model="main.portfolio" ng-pattern="/\d+\.?\d{0,2}/" name="portfolio"/>
+                                <input ng-model="main.portfolio" ng-pattern="/\d+\.?\d{0,2}/" name="portfolio" />
                                 <div ng-messages="np.portfolio.$error">
                                     <div ng-message="pattern">Please enter your price without the $</div>
                                 </div>
