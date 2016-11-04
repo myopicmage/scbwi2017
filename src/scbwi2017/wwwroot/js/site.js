@@ -72,16 +72,6 @@ function RegController(menu, info, $mdDialog, error) {
     self.regTypes = [];
     self.reg = {};
     self.reg.user = {
-        first: 'kevin',
-        last: 'bernfeld',
-        address1: '370 Ocean Ave',
-        address2: 'apt 1007',
-        city: 'revere',
-        state: 'ma',
-        zip: '02151',
-        country: 'USA',
-        email: 'kcbernfeld@gmail.com',
-        phone: '786.566.2467'
     };
     self.selectedReg = {};
     self.regType = {};
