@@ -46,7 +46,7 @@ namespace scbwi2017.Services
                         to = new [] { new EmailAddress(email, name) },
                         bcc = new []
                         {
-                            new EmailAddress("lindabernfeld@gmail.com", "Linda Bernfeld"),
+                            new EmailAddress("florida-ra@scbwi.org", "Florida RA"),
                             //new EmailAddress("kcbernfeld@gmail.com", "Kevin Bernfeld"), 
                         },
                         subject = subject

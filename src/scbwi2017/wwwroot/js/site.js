@@ -631,19 +631,58 @@ function AdminCtrl($http, menu) {
     }
 
     self.deleteRegType = function (id) {
-
+        $http.post('/admin/deletetype', id)
+            .then(function (data) {
+                if (data.data.success) {
+                    self.getregtypes();
+                }
+            }, function (data) {
+                console.log(data);
+            });
     }
 
     self.deleteComprehensive = function (id) {
-
+        $http.post('/admin/deletecomprehensive', id)
+            .then(function (data) {
+                if (data.data.success) {
+                    self.getComprehensives();
+                }
+            }, function (data) {
+                console.log(data);
+            });
     }
 
     self.deleteMeal = function (id) {
-
+        $http.post('/admin/deletemeal', id)
+            .then(function (data) {
+                if (data.data.success) {
+                    self.getMeals();
+                }
+            }, function (data) {
+                console.log(data);
+            });
     }
 
     self.deleteWorkshop = function (id) {
+        $http.post('/admin/deleteworkshop', id)
+            .then(function (data) {
+                if (data.data.success) {
+                    self.getWorkshops();
+                }
+            }, function (data) {
+                console.log(data);
+            });
+    }
 
+    self.deleteCoupon = function (id) {
+        $http.post('/admin/deletecoupon', id)
+            .then(function (data) {
+                if (data.data.success) {
+                    self.getWorkshops();
+                }
+            }, function (data) {
+                console.log(data);
+            });
     }
 
     self.createregtype = function (save) {
@@ -795,7 +834,7 @@ function AdminCtrl($http, menu) {
                 });
     }
 
-    self.matchtype = function(id) {
+    self.matchtype = function (id) {
         switch (id) {
             case 0:
                 return "Percentage";

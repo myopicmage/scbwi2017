@@ -54,10 +54,16 @@
                                     <td>{{t.lateprice | currency : "$" :2}}</td>
                                     <td>{{t.ismember === true ? "Yes" : "No"}}</td>
                                     <td>{{t.friday === true ? "Yes" : "No"}}</td>
-                                    <td>{{t.sunday === false ? "Yes" : "No"}}</td>
+                                    <td>{{(t.friday === false && t.sunday === false) ? "Yes" : "No"}}</td>
                                     <td>
-                                        <md-button class="md-raised md-warn" ng-click="main.deleteRegType(t.id)">
+                                        <md-button class="md-raised md-warn" ng-hide="main.delregtype[t.id]" ng-click="main.delregtype[t.id] = true;">
                                             <md-icon>delete</md-icon> Delete
+                                        </md-button>
+                                        <md-button class="md-raised" ng-show="main.delregtype[t.id]" ng-click="main.delregtype[t.id] = false;">
+                                            <md-icon>not_interested</md-icon> Cancel
+                                        </md-button>
+                                        <md-button class="md-raised md-warn" ng-show="main.delregtype[t.id]" ng-click="main.deleteRegType(t.id)">
+                                            <md-icon>delete</md-icon> Confirm
                                         </md-button>
                                     </td>
                                     <td>
@@ -103,13 +109,19 @@
                                     <td>
                                         <md-input-container>
                                             <label>Price</label>
-                                            <input type="text" ng-model="main.newreg.earlyprice" required />
+                                            <input type="text" ng-model="main.newreg.earlyprice" required ng-pattern="/\d+\.?\d{0,2}/" name="earlyprice" />
+                                            <div ng-messages="nrt.earlyprice.$error">
+                                                <div ng-message="pattern">Please enter your price without the $</div>
+                                            </div>
                                         </md-input-container>
                                     </td>
                                     <td>
                                         <md-input-container>
                                             <label>Late Price</label>
-                                            <input type="text" ng-model="main.newreg.lateprice" required />
+                                            <input type="text" ng-model="main.newreg.lateprice" required ng-pattern="/\d+\.?\d{0,2}/" name="lateprice" />
+                                            <div ng-messages="nrt.lateprice.$error">
+                                                <div ng-message="pattern">Please enter your price without the $</div>
+                                            </div>
                                         </md-input-container>
                                     </td>
                                     <td>
@@ -208,7 +220,10 @@
                                     <td>
                                         <md-input-container>
                                             <label>Price</label>
-                                            <input type="text" ng-model="main.newc.price" required />
+                                            <input type="text" ng-model="main.newc.price" required ng-pattern="/\d+\.?\d{0,2}/" name="price" />
+                                            <div ng-messages="nc.price.$error">
+                                                <div ng-message="pattern">Please enter your price without the $</div>
+                                            </div>
                                         </md-input-container>
                                     </td>
                                     <td>
@@ -258,7 +273,6 @@
                             <tbody>
                                 <tr ng-repeat="m in main.meals">
                                     <td>{{m.title}}</td>
-                                    <td>{{m.description}}</td>
                                     <td>
                                         <md-button class="md-raised md-warn" ng-click="main.deleteMeal(m.id)">
                                             <md-icon>delete</md-icon> Delete
@@ -284,12 +298,6 @@
                                         <md-input-container>
                                             <label>Title</label>
                                             <input type="text" ng-model="main.newm.title" required />
-                                        </md-input-container>
-                                    </td>
-                                    <td>
-                                        <md-input-container>
-                                            <label>Description</label>
-                                            <input type="text" ng-model="main.newm.description" required />
                                         </md-input-container>
                                     </td>
                                     <td ng-hide="main.newmloading">
@@ -433,11 +441,17 @@
                         <div layout="row">
                             <md-input-container>
                                 <label>Manuscript Critique Price</label>
-                                <input ng-model="main.manuscript" />
+                                <input ng-model="main.manuscript" ng-pattern="/\d+\.?\d{0,2}/" name="manuscript" />
+                                <div ng-messages="np.manuscript.$error">
+                                    <div ng-message="pattern">Please enter your price without the $</div>
+                                </div>
                             </md-input-container>
                             <md-input-container>
                                 <label>Portfolio Review Price</label>
-                                <input ng-model="main.portfolio" />
+                                <input ng-model="main.portfolio" ng-pattern="/\d+\.?\d{0,2}/" name="portfolio"/>
+                                <div ng-messages="np.portfolio.$error">
+                                    <div ng-message="pattern">Please enter your price without the $</div>
+                                </div>
                             </md-input-container>
                             <md-input-container>
                                 <label>Satuday Dinner Price</label>
