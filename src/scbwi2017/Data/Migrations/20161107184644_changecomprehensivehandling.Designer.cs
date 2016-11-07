@@ -8,9 +8,10 @@ using scbwi2017.Data;
 namespace scbwi2017.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161107184644_changecomprehensivehandling")]
+    partial class changecomprehensivehandling
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1");
@@ -273,64 +274,6 @@ namespace scbwi2017.Data.Migrations
                     b.HasIndex("Registrationid");
 
                     b.ToTable("Extras");
-                });
-
-            modelBuilder.Entity("scbwi2017.Models.Data.FlatRegistration", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Email");
-
-                    b.Property<string>("address1");
-
-                    b.Property<string>("address2");
-
-                    b.Property<string>("city");
-
-                    b.Property<string>("cleared");
-
-                    b.Property<string>("comprehensive");
-
-                    b.Property<string>("coupon");
-
-                    b.Property<string>("created");
-
-                    b.Property<string>("first_workshop");
-
-                    b.Property<string>("firstname");
-
-                    b.Property<string>("lastname");
-
-                    b.Property<int>("manuscript");
-
-                    b.Property<string>("meal");
-
-                    b.Property<string>("paid");
-
-                    b.Property<string>("phone");
-
-                    b.Property<int>("portfolio");
-
-                    b.Property<string>("postalcode");
-
-                    b.Property<string>("registrationtype");
-
-                    b.Property<int>("satdinner");
-
-                    b.Property<string>("second_workshop");
-
-                    b.Property<string>("state");
-
-                    b.Property<decimal>("subtotal");
-
-                    b.Property<string>("takingbus");
-
-                    b.Property<decimal>("total");
-
-                    b.HasKey("id");
-
-                    b.ToTable("RegArchive");
                 });
 
             modelBuilder.Entity("scbwi2017.Models.Data.Meal", b =>

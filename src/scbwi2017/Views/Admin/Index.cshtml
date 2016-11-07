@@ -19,30 +19,69 @@
                     </div>
                 </md-toolbar>
                 <md-card-content ng-hide="main.showreg">
-                    <div ng-repeat="r in main.registrations" layout="column" layout-wrap>
-                        <div flex>
-                            <b>Name:</b> {{r.firstname}} {{r.lastname}}
-                        </div>
-                        <div flex>
-                            <b>Address:</b> {{r.address1}}<br />
-                            {{r.address2}}<br ng-if="r.address2" />
-                            {{r.city}}, {{r.state}} {{r.postalcode}}
-                        </div>
-                        <div flex>
-                            <b>Email:</b> {{r.Email}}
-                        </div>
-                        <div flex>
-                            <b>Phone:</b> {{r.phone}}
-                        </div>
-                        <div flex>
-                            <b>Registration:</b> {{r.registrationtype}}
-                        </div>
-                        <div flex>
-                            <b>Manuscript Critiques:</b> {{r.manuscript}}<br />
-                            <b>Portfolio Reviews:</b> {{r.portfolio}}
+                    <div layout="column">
+                        <div ng-repeat="r in main.registrations" layout="row" layout-wrap class="padded hover" ng-class="{'zebra' : $even}">
+                            <div flex>
+                                <b>Name:</b><br />
+                                {{r.firstname}} {{r.lastname}}<br />
+                                <b>Email:</b><br />
+                                {{r.email}}<br />
+                                <b>Phone:</b><br />
+                                {{r.phone}}
+                            </div>
+                            <div flex>
+                                <b>Address:</b><br />
+                                {{r.address1}}<br />
+                                {{r.address2}}<br ng-if="r.address2" />
+                                {{r.city}}, {{r.state}} {{r.postalcode}}
+                            </div>
+                            <div flex>
+                                <b>Registration:</b><br />
+                                {{r.registrationtype}}<br />
+                                <b>Taking Bus</b><br />
+                                {{r.takingbus}}<br />
+                                <b>Saturday Meal</b><br />
+                                {{r.meal}}
+                            </div>
+                            <div flex>
+                                <b>Workshop 1:</b> {{r.first_workshop}}<br />
+                                <b>Workshop 2:</b> {{r.second_workshop}}<br />
+                            </div>
+                            <div flex>
+                                <b>Comprehensive:</b> {{r.comprehensive}}<br />
+                                <b>Manuscript Critiques:</b> {{r.manuscript}}<br />
+                                <b>Portfolio Reviews:</b> {{r.portfolio}}<br />
+                                <b>Extra Dinners</b> {{r.satdinner}}
+                            </div>
+                            <div flex>
+                                <b>Coupon:</b> {{r.coupon}}<br />
+                                <b>Subtotal:</b> {{r.subtotal}}<br />
+                                <b>Total: </b> {{r.total}}<br />
+                                <b>Paid: </b> {{r.paid}}
+                            </div>
+                            <div flex>
+                                <md-button class="md-raised md-warn" ng-hide="main.delreg[r.id]" ng-click="main.delreg[r.id] = true;">
+                                    <md-icon>delete</md-icon> Delete
+                                </md-button>
+                                <md-button class="md-raised" ng-show="main.delreg[r.id]" ng-click="main.delreg[r.id] = false;">
+                                    <md-icon>not_interested</md-icon> Cancel
+                                </md-button>
+                                <md-button class="md-raised md-warn" ng-show="main.delreg[r.id]" ng-click="main.deleteReg(r.id)">
+                                    <md-icon>delete</md-icon> Confirm
+                                </md-button>
+                                <md-button class="md-raised">
+                                    <md-icon>edit</md-icon> Edit
+                                </md-button>
+                                <md-button class="md-raised" href="/admin/registration?id={{r.id}}">
+                                    View
+                                </md-button>
+                            </div>
                         </div>
                     </div>
                 </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button class="md-raised md-primary" href="/admin/registrations">View All</md-button>
+                </md-card-actions>
             </md-card>
             <md-card id="reg-types" flex>
                 <md-toolbar class="md-hue-2" ng-click="main.showtype = !main.showtype">

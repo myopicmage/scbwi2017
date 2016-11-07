@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using scbwi2017.Data;
 using scbwi2017.Models;
 using scbwi2017.Models.Data;
+using scbwi2017.Models.RegistrationViewModels;
+using scbwi2017.Services;
 
 namespace scbwi2017.Controllers
 {
@@ -19,20 +22,27 @@ namespace scbwi2017.Controllers
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILogger _logger;
+        private readonly IEmailSender _msgSender;
 
 
-        public AdminController(ApplicationDbContext ctx, UserManager<ApplicationUser> usermgr, RoleManager<IdentityRole> rm)
+        public AdminController(ApplicationDbContext ctx, UserManager<ApplicationUser> usermgr, RoleManager<IdentityRole> rm, ILoggerFactory factory, IEmailSender sender)
         {
             _db = ctx;
             _userManager = usermgr;
             _roleManager = rm;
+            _logger = factory.CreateLogger("All");
+            _msgSender = sender;
         }
 
         public IActionResult Index() => View();
 
-        public IActionResult Registration() => View();
+        public IActionResult Registration(int id)
+        {
+            ViewData["id"] = id;
 
-        public IActionResult RegTypes() => Json(_db.Types.ToList());
+            return View();
+        }
 
         public IActionResult Registrations() => View();
 
@@ -42,7 +52,7 @@ namespace scbwi2017.Controllers
             var reg = _db.Registrations
                 .OrderBy(x => x.paid)
                 .Include(x => x.user)
-                .Include(x => x.Extras)
+                .Include(x => x.comprehensive)
                 .Include(x => x.first)
                 .Include(x => x.second)
                 .Include(x => x.coupon)
@@ -53,25 +63,186 @@ namespace scbwi2017.Controllers
         }
 
         [HttpPost]
-        public IActionResult Registration(int id)
+        public IActionResult GetRegistration([FromBody] int id)
         {
             var reg = _db.Registrations
                 .Include(x => x.user)
-                .Include(x => x.Extras)
+                .Include(x => x.comprehensive)
                 .Include(x => x.first)
                 .Include(x => x.second)
                 .Include(x => x.coupon)
                 .Include(x => x.meal)
                 .Include(x => x.type)
+                .Include(x => x.comprehensive)
                 .SingleOrDefault(x => x.id == id);
 
             if (reg == null)
             {
-                return Json(new { success = false, message = "not found"});
+                return Json(new { success = false, message = "not found" });
             }
 
-            return Json(new {success = true, data = reg.Flatten()});
+            return Json(new { success = true, data = reg });
         }
+
+        [HttpPost]
+        public IActionResult UpdateReg([FromBody] RegistrationViewModel r)
+        {
+            var rvm = _db.Registrations.SingleOrDefault(x => x.id == r.id);
+            var totals = TotalCalc.CalcTotal(r, _db, _logger);
+
+            var reg = new Registration(r)
+            {
+                cleared = new DateTime(2000, 1, 1),
+                coupon = _db.Coupons.SingleOrDefault(x => x.text == r.coupon),
+                created = DateTime.Now,
+                createdby = r.user.email,
+                first = _db.Workshops.SingleOrDefault(x => x.id == r.first),
+                manuscript = r.manuscripts,
+                meal = _db.Meals.SingleOrDefault(x => x.id == r.meal),
+                modified = DateTime.Now,
+                modifiedby = r.user.email,
+                paid = new DateTime(2000, 1, 1),
+                paypalid = $"{r.user.first}{r.user.last}{DateTime.Now}",
+                portfolio = r.portfolios,
+                second = _db.Workshops.SingleOrDefault(x => x.id == r.second),
+                subtotal = totals.subtotal,
+                takingbus = r.takingbus == "true",
+                total = totals.total,
+                type = _db.Types.SingleOrDefault(x => x.id == r.type),
+                satdinner = r.satdinner,
+                comprehensive = _db.Extras.SingleOrDefault(x => x.id == r.comprehensive)
+            };
+
+            rvm.user = reg.user;
+            rvm.cleared = reg.cleared;
+            rvm.coupon = reg.coupon;
+            rvm.first = reg.first;
+            rvm.manuscript = reg.manuscript;
+            rvm.meal = reg.meal;
+            rvm.modified = DateTime.Now;
+            rvm.modifiedby = User.Identity.Name;
+            rvm.portfolio = reg.portfolio;
+            rvm.second = reg.second;
+            rvm.takingbus = reg.takingbus;
+            rvm.type = reg.type;
+            rvm.satdinner = reg.satdinner;
+            rvm.comprehensive = reg.comprehensive;
+
+            if (rvm.total != totals.total)
+            {
+                CreatePending(rvm, reg, totals);
+            }
+
+            rvm.subtotal = totals.subtotal;
+            rvm.total = totals.total;
+
+            try
+            {
+                _db.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"db error: {ex.Message}" });
+            }
+        }
+
+        private async void CreatePending(Registration old, Registration newr, Totals t)
+        {
+            var p = new Pending
+            {
+                total = t.total - old.total,
+                active = true,
+                displayid = Guid.NewGuid(),
+                message = "You have requested some new charges for your registration:<br />"
+            };
+
+            if (old.comprehensive == null && newr.comprehensive != null)
+            {
+                p.comprehensive = true;
+                p.c_name = newr.comprehensive.title;
+                p.message += $"Comprehensive: {newr.comprehensive.title}<br />";
+            }
+
+            if (newr.manuscript > old.manuscript)
+            {
+                p.manuscript = newr.manuscript - old.manuscript;
+                p.message += $"Manuscript Critiques: New: {newr.manuscript} Old: {old.manuscript}<br />";
+            }
+
+            if (newr.portfolio > old.portfolio)
+            {
+                p.portfolio = newr.portfolio - old.portfolio;
+                p.message += $"Portfolio Reviews: New: {newr.portfolio} Old: {old.manuscript}<br />";
+            }
+
+            if (newr.satdinner > old.satdinner)
+            {
+                p.satdinner = newr.satdinner - old.satdinner;
+                p.message += $"Saturday Dinners: New: {newr.satdinner} Old: {old.satdinner}<br />";
+            }
+
+            p.message +=
+                $"<br />If you initiated this request, please go to <a href='https://register.scbwiflorida.com/register/update?id={p.displayid}";
+            p.message += "this link</a> and submit your updated payment.<br />";
+            p.message += "Thanks,<br />SCBWI Florida Registration Bot";
+
+            try
+            {
+                _db.SaveChanges();
+                var result = await _msgSender.SendEmailAsync(newr.user.Email, "Updated Registration", p.message,
+                    newr.user + newr.user.lastname);
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    _logger.LogCritical("Failed to send email!");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Failed to save new charges for {old.id}. {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public IActionResult DeleteReg(int id)
+        {
+            var type = _db.Registrations
+                .Include(x => x.user)
+                .Include(x => x.comprehensive)
+                .Include(x => x.first)
+                .Include(x => x.second)
+                .Include(x => x.coupon)
+                .Include(x => x.meal)
+                .Include(x => x.type)
+                .Include(x => x.comprehensive)
+                .SingleOrDefault(x => x.id == id);
+
+            if (type == null)
+            {
+                return Json(new { success = false });
+            }
+
+            _db.RegArchive.Add(type.Flatten());
+            _db.Registrations.Remove(type);
+
+            try
+            {
+                _db.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"db error: {ex.Message}"
+                });
+            }
+        }
+
+        public IActionResult RegTypes() => Json(_db.Types.ToList());
 
         [HttpPost]
         public IActionResult RegTypes([FromBody] RegistrationType newreg)
@@ -110,6 +281,34 @@ namespace scbwi2017.Controllers
             return Json(new { success = true });
         }
 
+        [HttpPost]
+        public IActionResult DeleteType(int id)
+        {
+            var type = _db.Types.SingleOrDefault(x => x.id == id);
+
+            if (type == null)
+            {
+                return Json(new { success = false });
+            }
+
+            _db.Types.Remove(type);
+
+            try
+            {
+                _db.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"db error: {ex.Message}"
+                });
+            }
+        }
+
         public IActionResult Comprehensives()
             => Json(_db.Extras.Where(x => x.comprehensive == ExtraType.Comprehensive).ToList());
 
@@ -140,6 +339,35 @@ namespace scbwi2017.Controllers
 
             return Json(new { success = true });
         }
+
+        [HttpPost]
+        public IActionResult DeleteComprehensive(int id)
+        {
+            var type = _db.Extras.SingleOrDefault(x => x.id == id);
+
+            if (type == null)
+            {
+                return Json(new { success = false });
+            }
+
+            _db.Extras.Remove(type);
+
+            try
+            {
+                _db.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"db error: {ex.Message}"
+                });
+            }
+        }
+
         public IActionResult Meals()
             => Json(_db.Meals.ToList());
 
@@ -169,6 +397,35 @@ namespace scbwi2017.Controllers
 
             return Json(new { success = true });
         }
+
+        [HttpPost]
+        public IActionResult DeleteMeal(int id)
+        {
+            var type = _db.Meals.SingleOrDefault(x => x.id == id);
+
+            if (type == null)
+            {
+                return Json(new { success = false });
+            }
+
+            _db.Meals.Remove(type);
+
+            try
+            {
+                _db.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"db error: {ex.Message}"
+                });
+            }
+        }
+
         public IActionResult Workshops()
             => Json(_db.Workshops.ToList());
 
@@ -198,6 +455,34 @@ namespace scbwi2017.Controllers
             return Json(new { success = true });
         }
 
+        [HttpPost]
+        public IActionResult DeleteWorkshop(int id)
+        {
+            var type = _db.Workshops.SingleOrDefault(x => x.id == id);
+
+            if (type == null)
+            {
+                return Json(new { success = false });
+            }
+
+            _db.Workshops.Remove(type);
+
+            try
+            {
+                _db.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"db error: {ex.Message}"
+                });
+            }
+        }
+
         public IActionResult Coupons()
             => Json(_db.Coupons.ToList());
 
@@ -225,6 +510,34 @@ namespace scbwi2017.Controllers
             }
 
             return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public IActionResult DeleteCoupon(int id)
+        {
+            var type = _db.Coupons.SingleOrDefault(x => x.id == id);
+
+            if (type == null)
+            {
+                return Json(new { success = false });
+            }
+
+            _db.Coupons.Remove(type);
+
+            try
+            {
+                _db.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"db error: {ex.Message}"
+                });
+            }
         }
 
         public IActionResult Prices()

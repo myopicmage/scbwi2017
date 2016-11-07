@@ -20,6 +20,7 @@ namespace scbwi2017.Models.Data
         public int portfolio { get; set; }
         public int satdinner { get; set; }
         public Coupon coupon { get; set; }
+        public Extra comprehensive { get; set; }
 
         public DateTime paid { get; set; }
         public DateTime cleared { get; set; }
@@ -124,6 +125,7 @@ namespace scbwi2017.Models.Data
 
     public class FlatRegistration
     {
+        public int id { get; set; }
         public string firstname { get; set; }
         public string lastname { get; set; }
         public string address1 { get; set; }
@@ -151,6 +153,7 @@ namespace scbwi2017.Models.Data
 
         public FlatRegistration(Registration r)
         {
+            id = r.id;
             firstname = r.user.firstname;
             lastname = r.user.lastname;
             address1 = r.user.address1;
@@ -162,10 +165,10 @@ namespace scbwi2017.Models.Data
             registrationtype = r.type.title;
             takingbus = r.takingbus ? "Yes" : "No";
             meal = r.meal.title;
-            comprehensive = r.Extras?.FirstOrDefault()?.title ?? "None";
+            comprehensive = r.comprehensive?.title ?? "None";
             first_workshop = r.first?.title ?? "None";
             second_workshop = r.second?.title ?? "None";
-            coupon = r.coupon?.text;
+            coupon = r.coupon?.text ?? "None";
             created = r.created.ToString();
             paid = r.paid.ToString();
             cleared = r.cleared.ToString();

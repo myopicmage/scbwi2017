@@ -257,8 +257,6 @@ function RegController(menu, info, $mdDialog, error) {
                             }
 
                             $mdDialog.hide();
-
-                            console.log(data);
                         });
                     });
                 });
@@ -547,6 +545,7 @@ function AdminCtrl($http, menu) {
     self.newregtype = false;
     self.newcomprehensive = false;
     self.newmeal = false;
+    self.all = false;
 
     self.getregtypes = function () {
         $http.get('/admin/regtypes')
@@ -620,15 +619,26 @@ function AdminCtrl($http, menu) {
                 });
     }
 
-    self.getRegistrations  = function() {
-        $http.post('/admin/registrations?frontPage=true')
-            .then(function(data) {
-                    console.log(data);
-                    self.registrations = data.data;
-                },
-                function(data) {
+    self.getRegistrations = function () {
+        $http.post('/admin/registrations?frontPage=' + !self.all)
+            .then(function (data) {
+                console.log(data);
+                self.registrations = data.data;
+            },
+                function (data) {
                     console.log(data);
                 });
+    }
+
+    self.deleteReg = function (id) {
+        $http.post('/admin/deletereg', id)
+            .then(function (data) {
+                if (data.data.success) {
+                    self.getregtypes();
+                }
+            }, function (data) {
+                console.log(data);
+            });
     }
 
     self.deleteRegType = function (id) {
@@ -696,8 +706,6 @@ function AdminCtrl($http, menu) {
 
             return;
         }
-
-        console.log(self.newreg);
 
         $http.post('/admin/regtypes', self.newreg)
             .then(function (data) {
@@ -856,6 +864,101 @@ function AdminCtrl($http, menu) {
     self.getRegistrations();
 }
 
+function SingleController($http, info) {
+    var self = this;
+
+    self.uneditable = true;
+
+    self.getRegistration = function (id) {
+        $http.post('/admin/getregistration', id)
+            .then(function (data) {
+                if (data.data.success === true) {
+                    self.r = data.data.data;
+                    self.r_backup = angular.copy(data.data.data);
+                }
+            });
+    };
+
+    self.cancel = function () {
+        self.uneditable = true;
+        self.r = angular.copy(self.r_backup);
+    };
+
+    info.getRegTypes(true, function (data) {
+        self.regTypes = data;
+    });
+
+    info.getPrices(function (data) {
+        self.prices = data;
+    });
+
+    info.getWorkshops(function (data) {
+        self.earlyworkshops = data.early;
+        self.lateworkshops = data.late;
+    });
+
+    info.getComprehensives(function (data) {
+        self.comprehensives = data;
+    });
+
+    info.getMeals(function (data) {
+        self.meals = data;
+    });
+
+    self.save = function () {
+        self.saving = true;
+
+        info.getTotal(self.makeViewModel(), function (data) {
+            self.new_subtotal = data.subtotal;
+            self.new_total = data.total;
+
+            //if (self.new_subtotal === self.r.subtotal && self.new_total === self.r.total) {
+                console.log('they are the same');
+
+                $http.post('/admin/updatereg', self.makeViewModel())
+                    .then(function (data) {
+                        self.saving = false;
+                        self.uneditable = true;
+                        if (data.data.success) {
+                            console.log(data);
+                        } else {
+                            console.log(data);
+                        }
+                    },
+                        function (data) {
+                            console.log(data);
+                            self.saving = false;
+                        });
+            //} else {
+            //    console.log('they are not the same');
+            //}
+        });
+    }
+
+    self.makeViewModel = function () {
+        return {
+            user: self.r.user,
+            id: self.r.id,
+            comprehensive: gdef(self.r.comprehensive),
+            first: gdef(self.r.first),
+            second: gdef(self.r.second),
+            manuscripts: self.r.manuscript,
+            portfolios: self.r.portfolio,
+            satdinner: self.r.satdinner,
+            takingbus: self.r.takingbus,
+            type: gdef(self.r.type)
+        };
+    }
+
+    function gdef(thing) {
+        if (thing == null) {
+            return 0;
+        } else {
+            return thing.id;
+        }
+    }
+}
+
 app.directive('phone', PhoneDirective);
 app.factory('menu', MenuService);
 app.factory('info', InfoService);
@@ -863,6 +966,7 @@ app.factory('error', ErrorService);
 app.controller('AppCtrl', AppController);
 app.controller('RegCtrl', RegController);
 app.controller('AdminCtrl', AdminCtrl);
+app.controller('SingleCtrl', SingleController);
 
 Array.prototype.single = function (func) {
     var temp = this.filter(func);

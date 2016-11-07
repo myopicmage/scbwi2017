@@ -1,5 +1,186 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "View/Edit";
 }
+
+<div layout="column" flex ng-controller="SingleCtrl as main" class="main" ng-init="main.getRegistration(@ViewData["id"])">
+    <md-toolbar class="md-toolbar md-hue-2">
+        <div class="md-toolbar-tools">
+            <h3 style="color: #353535">
+                Single Registration
+            </h3>
+        </div>
+    </md-toolbar>
+    <md-content layout="row" class="wide" layout-align="top start" flex="70" layout-padding layout-fill>
+        <md-card>
+            <md-toolbar class="md-hue-2">
+                <div class="md-toolbar-tools">
+                    <h3>
+                        {{main.r.user.firstname}} {{main.r.user.lastname}} |
+                        Subtotal: {{main.r.subtotal}} |
+                        Total: {{main.r.total}} |
+                        Paid: {{main.r.paid}} |
+                        Coupon: {{main.r.coupon}}
+                    </h3>
+                </div>
+            </md-toolbar>
+            <md-card-content>
+                <h3>Info</h3>
+                <div layout="row" layout-wrap>
+                    <md-input-container>
+                        <label>Email</label>
+                        <input ng-model="main.r.user.email" ng-disabled="main.uneditable" />
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Phone</label>
+                        <input ng-model="main.r.user.phone" ng-disabled="main.uneditable" />
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Address 1</label>
+                        <input ng-model="main.r.user.address1" ng-disabled="main.uneditable" />
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Address 2</label>
+                        <input ng-model="main.r.user.address2" ng-disabled="main.uneditable" />
+                    </md-input-container>
+                    <md-input-container>
+                        <label>City</label>
+                        <input ng-model="main.r.user.city" ng-disabled="main.uneditable" />
+                    </md-input-container>
+                    <md-input-container>
+                        <label>State/Province</label>
+                        <input ng-model="main.r.user.state" ng-disabled="main.uneditable" />
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Zip/Postal Code</label>
+                        <input ng-model="main.r.user.postalcode" ng-disabled="main.uneditable" />
+                    </md-input-container>
+                </div>
+
+                <md-divider></md-divider>
+                <h3>Registration Type</h3>
+                <div>
+                    <md-radio-group ng-model="main.r.type.id" ng-disabled="main.uneditable">
+                        <div ng-repeat="package in main.regTypes" class="row">
+                            <div flex layout='row' layout-padding layout-align="start center">
+                                <div flex style="max-width: 200px;">
+                                    <b>Early: {{package.earlyprice | currency : "$" : 0}}</b><br />
+                                    <b>Late: {{package.lateprice | currency : "$" : 0}}</b>
+                                </div>
+                                <md-radio-button flex ng-value="package.id" class="md-primary">
+                                    <b>{{package.title}}</b> - {{package.description}}<br />
+                                </md-radio-button>
+                            </div>
+                        </div>
+                    </md-radio-group>
+                </div>
+
+                <md-divider></md-divider>
+                <h3>Comprehensive</h3>
+                <div>
+                    <md-radio-group ng-model="main.r.comprehensive" ng-disabled="main.uneditable">
+                        <div ng-repeat="comprehensive in main.comprehensives" class="row">
+                            <div flex layout='row' layout-padding layout-align="start center">
+                                <div flex style="max-width: 100px;">
+                                    <b ng-show="main.regType.friday">{{comprehensive.extracost | currency : "$" : 0}}</b>
+                                    <b ng-hide="main.regType.friday">{{comprehensive.price | currency : "$" : 0}}</b>
+                                </div>
+                                <md-radio-button flex ng-value="comprehensive.id" class="md-primary">
+                                    <b>{{comprehensive.title}}</b> - {{comprehensive.description}}
+                                    <br />
+                                    Presented By: {{comprehensive.presenters}}
+                                </md-radio-button>
+                            </div>
+                        </div>
+                    </md-radio-group>
+                </div>
+
+                <md-divider></md-divider>
+                <h3>Bus</h3>
+                <div>
+                    <md-checkbox ng-model="main.r.takingbus" ng-disabled="main.uneditable">
+                        Taking the bus
+                    </md-checkbox>
+                </div>
+
+                <md-divider></md-divider>
+                <h3>Workshops</h3>
+                <div>
+                    <h3>First Session</h3>
+                    <md-radio-group ng-model="main.r.first.id" class="row" ng-disabled="main.uneditable">
+                        <div ng-repeat="w in main.earlyworkshops">
+                            <md-radio-button flex ng-value="w.id" class="md-primary">
+                                <b>{{w.title}}</b> - {{w.description}}<br />
+                                Presented By: {{w.presenters}}
+                            </md-radio-button>
+                        </div>
+                    </md-radio-group>
+
+                    <h3>Second Session</h3>
+                    <md-radio-group ng-model="main.r.second.id" class="row" ng-disabled="main.uneditable">
+                        <div ng-repeat="w in main.lateworkshops">
+                            <md-radio-button flex ng-value="w.id" class="md-primary">
+                                <b>{{w.title}}</b> - {{w.description}}<br />
+                                Presented By: {{w.presenters}}
+                            </md-radio-button>
+                        </div>
+                    </md-radio-group>
+                </div>
+
+                <md-divider></md-divider>
+                <h3>Meal</h3>
+                <div>
+                    <md-radio-group ng-model="main.r.meal.id" class="row" ng-disabled="main.uneditable">
+                        <div ng-repeat="m in main.meals">
+                            <md-radio-button flex ng-value="m.id" class="md-primary">
+                                {{m.title}}
+                            </md-radio-button>
+                        </div>
+                    </md-radio-group>
+                </div>
+
+                <md-divider></md-divider>
+                <h3>Critiques and Dinners</h3>
+                <h4>Manuscript</h4>
+                <md-radio-group ng-model="main.r.manuscript" flex layout="row" ng-disabled="main.uneditable">
+                    <md-radio-button ng-value="0" flex class="md-primary">0</md-radio-button>
+                    <md-radio-button ng-value="1" flex class="md-primary">1</md-radio-button>
+                    <md-radio-button ng-value="2" flex class="md-primary">2</md-radio-button>
+                    <md-radio-button ng-value="3" flex class="md-primary">3</md-radio-button>
+                    <md-radio-button ng-value="4" flex class="md-primary">4</md-radio-button>
+                </md-radio-group>
+
+                <h4>Portfolio</h4>
+                <md-radio-group ng-model="main.r.portfolio" flex layout="row" ng-disabled="main.uneditable">
+                    <md-radio-button ng-value="0" flex class="md-primary">0</md-radio-button>
+                    <md-radio-button ng-value="1" flex class="md-primary">1</md-radio-button>
+                    <md-radio-button ng-value="2" flex class="md-primary">2</md-radio-button>
+                    <md-radio-button ng-value="3" flex class="md-primary">3</md-radio-button>
+                    <md-radio-button ng-value="4" flex class="md-primary">4</md-radio-button>
+                </md-radio-group>
+
+                <h4>Extra Dinners</h4>
+                <md-radio-group ng-model="main.r.satdinner" flex layout="row" ng-disabled="main.uneditable">
+                    <md-radio-button ng-value="0" flex class="md-primary">0</md-radio-button>
+                    <md-radio-button ng-value="1" flex class="md-primary">1</md-radio-button>
+                    <md-radio-button ng-value="2" flex class="md-primary">2</md-radio-button>
+                    <md-radio-button ng-value="3" flex class="md-primary">3</md-radio-button>
+                    <md-radio-button ng-value="4" flex class="md-primary">4</md-radio-button>
+                </md-radio-group>
+            </md-card-content>
+            <md-card-actions layout="row" layout-align="end center" ng-hide="main.saving">
+                <md-button class="md-raised" ng-show="main.uneditable" ng-click="main.uneditable = !main.uneditable">
+                    <md-icon>edit</md-icon> Edit
+                </md-button>
+                <md-button class="md-raised" ng-hide="main.uneditable" ng-click="main.cancel()">
+                    <md-icon>not_interested</md-icon> Cancel
+                </md-button>
+                <md-button class="md-raised" ng-hide="main.uneditable" ng-click="main.save()">
+                    <md-icon>update</md-icon> Update
+                </md-button>
+            </md-card-actions>
+            <md-card-actions layout="row" layout-align="end center" ng-show="main.saving">
+                <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            </md-card-actions>
+        </md-card>
+    </md-content>
+</div>

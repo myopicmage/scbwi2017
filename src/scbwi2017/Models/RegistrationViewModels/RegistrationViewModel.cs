@@ -20,6 +20,7 @@ namespace scbwi2017.Models.RegistrationViewModels
         public UserViewModel user { get; set; }
 
         public string nonce { get; set; }
+        public int id { get; set; }
     }
 
     public class UserViewModel

@@ -57,3 +57,11 @@ th {
 .md-toolbar-tools h3 {
     color: #353535;
 }
+
+.zebra {
+    background-color: #ececec;
+}
+
+.hover:hover {
+    background-color: #f5f5f5;
+}

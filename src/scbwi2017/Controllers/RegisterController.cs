@@ -31,6 +31,13 @@ namespace scbwi2017.Controllers
 
         public IActionResult Index() => View();
 
+        public IActionResult Update(Guid id)
+        {
+            ViewBag["id"] = id;
+
+            return View();
+        }
+
         public IActionResult GetToken()
         {
             try
@@ -90,22 +97,18 @@ namespace scbwi2017.Controllers
 
         public IActionResult Total([FromBody] RegistrationViewModel r)
         {
-            return Json(CalcTotal(r));
+            return Json(TotalCalc.CalcTotal(r, _db, _logger));
         }
 
         public async Task<IActionResult> Register([FromBody] RegistrationViewModel r)
         {
-            var totals = CalcTotal(r);
+            var totals = TotalCalc.CalcTotal(r, _db, _logger);
             var reg = new Registration(r)
             {
                 cleared = new DateTime(2000, 1, 1),
                 coupon = _db.Coupons.SingleOrDefault(x => x.text == r.coupon),
                 created = DateTime.Now,
                 createdby = r.user.email,
-                Extras = _db.Extras.SingleOrDefault(x => x.id == r.comprehensive) == null ? null : new List<Extra>
-                {
-                    _db.Extras.SingleOrDefault(x => x.id == r.comprehensive) 
-                },
                 first = _db.Workshops.SingleOrDefault(x => x.id == r.first),
                 manuscript = r.manuscripts,
                 meal = _db.Meals.SingleOrDefault(x => x.id == r.meal),
@@ -119,7 +122,8 @@ namespace scbwi2017.Controllers
                 takingbus = r.takingbus == "true",
                 total = totals.total,
                 type = _db.Types.SingleOrDefault(x => x.id == r.type),
-                satdinner = r.satdinner
+                satdinner = r.satdinner,
+                comprehensive = _db.Extras.SingleOrDefault(x => x.id == r.comprehensive) 
             };
 
             var request = new TransactionRequest
@@ -215,100 +219,6 @@ namespace scbwi2017.Controllers
             return attendees < w.maxattendees;
         }
 
-        private Totals CalcTotal(RegistrationViewModel r)
-        {
-            var subtotal = 0m;
-            var total = 0m;
-            var late = _db.Dates.SingleOrDefault(x => x.name == "late");
-            var m_price = _db.Prices.SingleOrDefault(x => x.type == "manuscript");
-            var p_price = _db.Prices.SingleOrDefault(x => x.type == "portfolio");
-            var d_price = _db.Prices.SingleOrDefault(x => x.type == "satdinner");
-
-            var reg = _db.Types.SingleOrDefault(x => x.id == r.type);
-
-            // registration
-            subtotal += DateTime.Now > late.value ? reg.lateprice : reg.earlyprice;
-
-            // comprehensive
-            if (r.comprehensive > 0)
-            {
-                var c = _db.Extras.SingleOrDefault(x => x.id == r.comprehensive);
-
-                subtotal += reg.friday ? 0 : c.price;
-            }
-
-            // manuscript critiques
-            subtotal += r.manuscripts * m_price.value;
-
-            // portfolio
-            subtotal += r.portfolios * p_price.value;
-
-            // saturday dinner
-            subtotal += r.satdinner * d_price.value;
-
-            // no coupon
-            if (string.IsNullOrEmpty(r.coupon))
-            {
-                total = subtotal;
-
-                return new Totals(subtotal, total, false);
-            }
-
-            var c_text = r.coupon.ToLower();
-
-            _logger.LogInformation($"Coupon attempt: {c_text}");
-
-            var coupon = _db.Coupons.SingleOrDefault(x => x.text == c_text);
-
-            // invalid coupon
-            if (coupon == null)
-            {
-                total = subtotal;
-
-                return new Totals(subtotal, total, false, "This coupon was invalid.");
-            }
-
-            var message = "";
-
-            // valid coupon!
-            switch (coupon.type)
-            {
-                case CouponType.TotalCost:
-                    total = Convert.ToDecimal(coupon.value);
-                    message = $"This coupon reduced your cost to {coupon.value}!";
-                    break;
-                case CouponType.PercentOff:
-                    total = subtotal - (subtotal * Convert.ToDecimal(coupon.value) / 100);
-                    message = $"This coupon is good for {coupon.value}% off!";
-                    break;
-                case CouponType.Reduction:
-                    total = subtotal - Convert.ToDecimal(coupon.value);
-                    message = $"This coupon is good for a ${coupon.value} discount!";
-                    break;
-                default:
-                    total = subtotal;
-                    break;
-            }
-
-            _logger.LogWarning($"Message: {message}");
-
-            return new Totals(subtotal, total, true, message);
-        }
     }
 
-    public class Totals
-    {
-        public decimal subtotal { get; set; }
-        public decimal total { get; set; }
-        public bool validcoupon { get; set; }
-        public string msg { get; set; }
-
-        public Totals(decimal sub, decimal tot, bool valid, string msg = "")
-        {
-            subtotal = sub;
-            total = tot;
-            validcoupon = valid;
-            this.msg = msg;
-        }
-    }
 }

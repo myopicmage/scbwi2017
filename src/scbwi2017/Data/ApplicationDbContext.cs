@@ -28,8 +28,10 @@ namespace scbwi2017.Data
         public virtual DbSet<Date> Dates { get; set; }
         public virtual DbSet<Extra> Extras { get; set; }
         public virtual DbSet<Meal> Meals { get; set; }
+        public virtual DbSet<Pending> Pendings { get; set; }
         public virtual DbSet<Price> Prices { get; set; }
         public virtual DbSet<Registration> Registrations { get; set; }
+        public virtual DbSet<FlatRegistration> RegArchive { get; set; }
         public virtual DbSet<RegistrationType> Types { get; set; }
         public virtual DbSet<Workshop> Workshops { get; set; }
     }

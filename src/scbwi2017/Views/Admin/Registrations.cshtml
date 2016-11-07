@@ -1,5 +1,78 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿<div layout="column" flex ng-controller="AdminCtrl as main" class="main" ng-init="main.all = true;">
+    <md-toolbar class="md-toolbar md-hue-2">
+        <div class="md-toolbar-tools">
+            <h3 style="color: #353535">
+                All Registrations
+            </h3>
+        </div>
+    </md-toolbar>
+    <md-content layout="row" class="wide" layout-align="top start" flex="70" layout-padding layout-fill>
+        <div layout="column" flex>
+            <md-card id="latest-reg" flex>
+                <md-toolbar class="md-hue-2" ng-click="main.showreg = !main.showreg">
+                    <div class="md-toolbar-tools">
+                        <h3>All</h3>
+                    </div>
+                </md-toolbar>
+                <md-card-content ng-hide="main.showreg">
+                    <div layout="column">
+                        <div ng-repeat="r in main.registrations" layout="row" layout-wrap class="padded hover" ng-class="{'zebra' : $even}">
+                            <div flex>
+                                <b>Name:</b><br />
+                                {{r.firstname}} {{r.lastname}}<br />
+                                <b>Email:</b><br />
+                                {{r.email}}<br />
+                                <b>Phone:</b><br />
+                                {{r.phone}}
+                            </div>
+                            <div flex>
+                                <b>Address:</b><br />
+                                {{r.address1}}<br />
+                                {{r.address2}}<br ng-if="r.address2" />
+                                {{r.city}}, {{r.state}} {{r.postalcode}}
+                            </div>
+                            <div flex>
+                                <b>Registration:</b><br />
+                                {{r.registrationtype}}<br />
+                                <b>Taking Bus</b><br />
+                                {{r.takingbus}}<br />
+                                <b>Saturday Meal</b><br />
+                                {{r.meal}}
+                            </div>
+                            <div flex>
+                                <b>Workshop 1:</b> {{r.first_workshop}}<br />
+                                <b>Workshop 2:</b> {{r.second_workshop}}<br />
+                            </div>
+                            <div flex>
+                                <b>Comprehensive:</b> {{r.comprehensive}}<br />
+                                <b>Manuscript Critiques:</b> {{r.manuscript}}<br />
+                                <b>Portfolio Reviews:</b> {{r.portfolio}}<br />
+                                <b>Extra Dinners</b> {{r.satdinner}}
+                            </div>
+                            <div flex>
+                                <b>Coupon:</b> {{r.coupon}}<br />
+                                <b>Subtotal:</b> {{r.subtotal}}<br />
+                                <b>Total: </b> {{r.total}}<br />
+                                <b>Paid: </b> {{r.paid}}
+                            </div>
+                            <div flex>
+                                <md-button class="md-raised md-warn" ng-hide="main.delreg[r.id]" ng-click="main.delreg[r.id] = true;">
+                                    <md-icon>delete</md-icon> Delete
+                                </md-button>
+                                <md-button class="md-raised" ng-show="main.delreg[r.id]" ng-click="main.delreg[r.id] = false;">
+                                    <md-icon>not_interested</md-icon> Cancel
+                                </md-button>
+                                <md-button class="md-raised md-warn" ng-show="main.delreg[r.id]" ng-click="main.deleteReg(r.id)">
+                                    <md-icon>delete</md-icon> Confirm
+                                </md-button>
+                                <md-button class="md-raised">
+                                    <md-icon>edit</md-icon> Edit
+                                </md-button>
+                            </div>
+                        </div>
+                    </div>
+                </md-card-content>
+            </md-card>
+        </div>
+    </md-content>
+</div>
