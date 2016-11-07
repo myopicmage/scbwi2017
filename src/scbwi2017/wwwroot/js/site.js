@@ -864,7 +864,7 @@ function AdminCtrl($http, menu) {
     self.getRegistrations();
 }
 
-function SingleController($http, info) {
+function SingleController($http, $mdDialog, info) {
     var self = this;
 
     self.uneditable = true;
@@ -905,34 +905,57 @@ function SingleController($http, info) {
         self.meals = data;
     });
 
-    self.save = function () {
+    self.save = function (shouldcharge) {
         self.saving = true;
 
         info.getTotal(self.makeViewModel(), function (data) {
             self.new_subtotal = data.subtotal;
             self.new_total = data.total;
 
-            //if (self.new_subtotal === self.r.subtotal && self.new_total === self.r.total) {
+            if (shouldcharge) {
                 console.log('they are the same');
 
-                $http.post('/admin/updatereg', self.makeViewModel())
-                    .then(function (data) {
-                        self.saving = false;
-                        self.uneditable = true;
-                        if (data.data.success) {
-                            console.log(data);
-                        } else {
-                            console.log(data);
-                        }
-                    },
-                        function (data) {
-                            console.log(data);
-                            self.saving = false;
-                        });
-            //} else {
-            //    console.log('they are not the same');
-            //}
+                self.withCharge();
+            } else {
+                self.withoutCharge();
+            }
         });
+    }
+
+    self.withoutCharge = function () {
+        $http.post('/admin/updateregwithoutcharge', self.makeViewModel())
+            .then(function (data) {
+                self.saving = false;
+                self.uneditable = true;
+
+                if (data.data.success) {
+                    console.log(data);
+                } else {
+                    console.log(data);
+                }
+            },
+                function (data) {
+                    console.log(data);
+                    self.saving = false;
+                });
+    }
+
+    self.withCharge = function () {
+        $http.post('/admin/updateregwithcharge', self.makeViewModel())
+            .then(function (data) {
+                self.saving = false;
+                self.uneditable = true;
+
+                if (data.data.success) {
+                    console.log(data);
+                } else {
+                    console.log(data);
+                }
+            },
+                function (data) {
+                    console.log(data);
+                    self.saving = false;
+                });
     }
 
     self.makeViewModel = function () {

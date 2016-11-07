@@ -85,7 +85,64 @@ namespace scbwi2017.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateReg([FromBody] RegistrationViewModel r)
+        public IActionResult UpdateRegWithoutCharge([FromBody] RegistrationViewModel r)
+        {
+            var rvm = _db.Registrations.SingleOrDefault(x => x.id == r.id);
+            var totals = TotalCalc.CalcTotal(r, _db, _logger);
+
+            var reg = new Registration(r)
+            {
+                cleared = new DateTime(2000, 1, 1),
+                coupon = _db.Coupons.SingleOrDefault(x => x.text == r.coupon),
+                created = DateTime.Now,
+                createdby = r.user.email,
+                first = _db.Workshops.SingleOrDefault(x => x.id == r.first),
+                manuscript = r.manuscripts,
+                meal = _db.Meals.SingleOrDefault(x => x.id == r.meal),
+                modified = DateTime.Now,
+                modifiedby = r.user.email,
+                paid = new DateTime(2000, 1, 1),
+                paypalid = $"{r.user.first}{r.user.last}{DateTime.Now}",
+                portfolio = r.portfolios,
+                second = _db.Workshops.SingleOrDefault(x => x.id == r.second),
+                subtotal = totals.subtotal,
+                takingbus = r.takingbus == "true",
+                total = totals.total,
+                type = _db.Types.SingleOrDefault(x => x.id == r.type),
+                satdinner = r.satdinner,
+                comprehensive = _db.Extras.SingleOrDefault(x => x.id == r.comprehensive)
+            };
+
+            rvm.user = reg.user;
+            rvm.cleared = reg.cleared;
+            rvm.coupon = reg.coupon;
+            rvm.first = reg.first;
+            rvm.manuscript = reg.manuscript;
+            rvm.meal = reg.meal;
+            rvm.modified = DateTime.Now;
+            rvm.modifiedby = User.Identity.Name;
+            rvm.portfolio = reg.portfolio;
+            rvm.second = reg.second;
+            rvm.takingbus = reg.takingbus;
+            rvm.type = reg.type;
+            rvm.satdinner = reg.satdinner;
+            rvm.comprehensive = reg.comprehensive;
+            rvm.subtotal = totals.subtotal;
+            rvm.total = totals.total;
+
+            try
+            {
+                _db.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"db error: {ex.Message}" });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult UpdateRegWithCharge([FromBody] RegistrationViewModel r)
         {
             var rvm = _db.Registrations.SingleOrDefault(x => x.id == r.id);
             var totals = TotalCalc.CalcTotal(r, _db, _logger);

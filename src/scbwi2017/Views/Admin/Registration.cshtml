@@ -174,8 +174,11 @@
                 <md-button class="md-raised" ng-hide="main.uneditable" ng-click="main.cancel()">
                     <md-icon>not_interested</md-icon> Cancel
                 </md-button>
-                <md-button class="md-raised" ng-hide="main.uneditable" ng-click="main.save()">
-                    <md-icon>update</md-icon> Update
+                @*<md-button class="md-raised" ng-hide="main.uneditable" ng-click="main.save(true)">
+                        <md-icon>update</md-icon> Update and Charge
+                    </md-button>*@
+                <md-button class="md-raised" ng-hide="main.uneditable" ng-click="main.save(false)">
+                    <md-icon>update</md-icon> Update and DO NOT Charge
                 </md-button>
             </md-card-actions>
             <md-card-actions layout="row" layout-align="end center" ng-show="main.saving">
@@ -184,3 +187,4 @@
         </md-card>
     </md-content>
 </div>
+

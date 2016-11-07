@@ -38,6 +38,12 @@ namespace scbwi2017.Controllers
             return View();
         }
 
+        [HttpPost]
+        public IActionResult GetPending(Guid id)
+        {
+            return View();
+        }
+
         public IActionResult GetToken()
         {
             try
