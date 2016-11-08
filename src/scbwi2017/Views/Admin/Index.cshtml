@@ -3,14 +3,14 @@
 }
 
 <div layout="column" flex ng-controller="AdminCtrl as main" class="main">
-    <md-toolbar class="md-toolbar md-hue-2">
+    <md-toolbar class="md-toolbar md-hue-2" md-scroll-shrink>
         <div class="md-toolbar-tools">
             <h3 style="color: #353535">
-                Administration (user: @User.Identity.Name)
+                Administration
             </h3>
         </div>
     </md-toolbar>
-    <md-content layout="row" class="wide" layout-align="top start" flex="70" layout-padding layout-fill>
+    <md-content layout-padding>
         <div layout="column" flex>
             <md-card id="latest-reg" flex>
                 <md-toolbar class="md-hue-2" ng-click="main.showreg = !main.showreg">
@@ -79,7 +79,7 @@
                         </div>
                     </div>
                 </md-card-content>
-                <md-card-actions layout="row" layout-align="end center">
+                <md-card-actions layout="row" layout-align="end center" ng-hide="main.showreg">
                     <md-button class="md-raised md-primary" href="/admin/registrations">View All</md-button>
                 </md-card-actions>
             </md-card>

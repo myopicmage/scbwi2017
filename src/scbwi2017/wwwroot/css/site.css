@@ -1,5 +1,6 @@
-﻿.main {
-    background-color: #ababab;
+﻿md-content {
+    background-color: #ececec;
+    height: 100%;
 }
 
 /* The starting CSS styles for the enter animation */

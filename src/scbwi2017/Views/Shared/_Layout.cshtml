@@ -16,160 +16,165 @@
         <link rel="stylesheet" href="lib/angular-material/angular-material.min.css" />
     </environment>
 </head>
-<body layout="row" ng-controller="AppCtrl as mainapp">
-    <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')" ng-hide="mainapp.isadmin">
-        <md-toolbar class="md-toolbar md-hue-3">
-            <h1 class="md-toolbar-tools">SCBWI Florida</h1>
-        </md-toolbar>
-        <md-list class="left-menu">
-            <md-subheader>Registration</md-subheader>
-            <md-list-item>
-                <a>
-                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
-                        <div class="inset">
-                            <md-button ng-class="{'md-primary': mainapp.step == 0}" class="md-fab md-mini">
-                                0
-                            </md-button>
-                        </div>
-                        <div class="inset menu-text">
-                            Membership
-                        </div>
-                    </md-item-content>
-                </a>
-            </md-list-item>
-            <md-list-item>
-                <a>
-                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
-                        <div class="inset">
-                            <md-button ng-class="{'md-primary': mainapp.step == 1}" class="md-fab md-mini">
-                                1
-                            </md-button>
-                        </div>
-                        <div class="inset menu-text">
-                            Basic Info
-                        </div>
-                    </md-item-content>
-                </a>
-            </md-list-item>
-            <md-list-item>
-                <a>
-                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
-                        <div class="inset">
-                            <md-button ng-class="{'md-primary': mainapp.step == 2}" class="md-fab md-mini">
-                                2
-                            </md-button>
-                        </div>
-                        <div class="inset menu-text">
-                            Registration Type
-                        </div>
-                    </md-item-content>
-                </a>
-            </md-list-item>
-            <md-list-item>
-                <a>
-                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
-                        <div class="inset">
-                            <md-button ng-class="{'md-primary': mainapp.step === 3}" class="md-fab md-mini" ng-disabled="!mainapp.friday">
-                                3
-                            </md-button>
-                        </div>
-                        <div class="inset menu-text">
-                            Comprehensives
-                        </div>
-                    </md-item-content>
-                </a>
-            </md-list-item>
-            <md-list-item>
-                <a>
-                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
-                        <div class="inset">
-                            <md-button ng-class="{'md-primary': mainapp.step === 4}" class="md-fab md-mini" ng-disabled="!mainapp.allowSunday">
-                                4
-                            </md-button>
-                        </div>
-                        <div class="inset menu-text">
-                            Workshops
-                        </div>
-                    </md-item-content>
-                </a>
-            </md-list-item>
-            <md-list-item>
-                <a>
-                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
-                        <div class="inset">
-                            <md-button ng-class="{'md-primary': mainapp.step === 5}" class="md-fab md-mini">
-                                5
-                            </md-button>
-                        </div>
-                        <div class="inset menu-text">
-                            Extras
-                        </div>
-                    </md-item-content>
-                </a>
-            </md-list-item>
-            <md-list-item>
-                <a>
-                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
-                        <div class="inset">
-                            <md-button ng-class="{'md-primary': mainapp.step === 6}" class="md-fab md-mini">
-                                6
-                            </md-button>
-                        </div>
-                        <div class="inset menu-text">
-                            Verify & Pay
-                        </div>
-                    </md-item-content>
-                </a>
-            </md-list-item>
-            <md-list-item>
-                <a>
-                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
-                        <div class="inset">
-                            <md-button ng-class="{'md-primary': mainapp.step === 7}" class="md-fab md-mini">
-                                7
-                            </md-button>
-                        </div>
-                        <div class="inset menu-text">
-                            Confirmed
-                        </div>
-                    </md-item-content>
-                </a>
-            </md-list-item>
-        </md-list>
-    </md-sidenav>
+<body layout="column" ng-controller="AppCtrl as mainapp">
+    <section layout="row" flex>
+        <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')" ng-hide="mainapp.isadmin">
+            <md-toolbar class="md-toolbar md-hue-3">
+                <h1 class="md-toolbar-tools">SCBWI Florida</h1>
+            </md-toolbar>
+            <md-list class="left-menu">
+                <md-subheader>Registration</md-subheader>
+                <md-list-item>
+                    <a>
+                        <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                            <div class="inset">
+                                <md-button ng-class="{'md-primary': mainapp.step == 0}" class="md-fab md-mini">
+                                    0
+                                </md-button>
+                            </div>
+                            <div class="inset menu-text">
+                                Membership
+                            </div>
+                        </md-item-content>
+                    </a>
+                </md-list-item>
+                <md-list-item>
+                    <a>
+                        <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                            <div class="inset">
+                                <md-button ng-class="{'md-primary': mainapp.step == 1}" class="md-fab md-mini">
+                                    1
+                                </md-button>
+                            </div>
+                            <div class="inset menu-text">
+                                Basic Info
+                            </div>
+                        </md-item-content>
+                    </a>
+                </md-list-item>
+                <md-list-item>
+                    <a>
+                        <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                            <div class="inset">
+                                <md-button ng-class="{'md-primary': mainapp.step == 2}" class="md-fab md-mini">
+                                    2
+                                </md-button>
+                            </div>
+                            <div class="inset menu-text">
+                                Registration Type
+                            </div>
+                        </md-item-content>
+                    </a>
+                </md-list-item>
+                <md-list-item>
+                    <a>
+                        <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                            <div class="inset">
+                                <md-button ng-class="{'md-primary': mainapp.step === 3}" class="md-fab md-mini" ng-disabled="!mainapp.friday">
+                                    3
+                                </md-button>
+                            </div>
+                            <div class="inset menu-text">
+                                Comprehensives
+                            </div>
+                        </md-item-content>
+                    </a>
+                </md-list-item>
+                <md-list-item>
+                    <a>
+                        <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                            <div class="inset">
+                                <md-button ng-class="{'md-primary': mainapp.step === 4}" class="md-fab md-mini" ng-disabled="!mainapp.allowSunday">
+                                    4
+                                </md-button>
+                            </div>
+                            <div class="inset menu-text">
+                                Workshops
+                            </div>
+                        </md-item-content>
+                    </a>
+                </md-list-item>
+                <md-list-item>
+                    <a>
+                        <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                            <div class="inset">
+                                <md-button ng-class="{'md-primary': mainapp.step === 5}" class="md-fab md-mini">
+                                    5
+                                </md-button>
+                            </div>
+                            <div class="inset menu-text">
+                                Extras
+                            </div>
+                        </md-item-content>
+                    </a>
+                </md-list-item>
+                <md-list-item>
+                    <a>
+                        <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                            <div class="inset">
+                                <md-button ng-class="{'md-primary': mainapp.step === 6}" class="md-fab md-mini">
+                                    6
+                                </md-button>
+                            </div>
+                            <div class="inset menu-text">
+                                Verify & Pay
+                            </div>
+                        </md-item-content>
+                    </a>
+                </md-list-item>
+                <md-list-item>
+                    <a>
+                        <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                            <div class="inset">
+                                <md-button ng-class="{'md-primary': mainapp.step === 7}" class="md-fab md-mini">
+                                    7
+                                </md-button>
+                            </div>
+                            <div class="inset menu-text">
+                                Confirmed
+                            </div>
+                        </md-item-content>
+                    </a>
+                </md-list-item>
+            </md-list>
+        </md-sidenav>
 
-    <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')" ng-show="mainapp.isadmin">
-        <md-toolbar class="md-toolbar md-hue-3">
-            <h1 class="md-toolbar-tools">SCBWI Florida</h1>
-        </md-toolbar>
-        <md-list class="left-menu">
-            <md-subheader>Admin Tools</md-subheader>
-            <md-list-item>
-                <a href="/Admin">
-                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
-                        <div class="inset">
-                            <md-button class="md-primary md-raised">
-                                <md-icon>home</md-icon> Admin Panel
-                            </md-button>
-                        </div>
-                    </md-item-content>
-                </a>
-            </md-list-item>
-            <md-list-item>
-                <a target="_blank" href="/Admin/GetCsv">
-                    <md-item-content md-ink-ripple layout="row" layout-align="start center">
-                        <div class="inset">
-                            <md-button class="md-primary md-raised">
-                                <md-icon>file_download</md-icon> Download Report
-                            </md-button>
-                        </div>
-                    </md-item-content>
-                </a>
-            </md-list-item>
-        </md-list>
-    </md-sidenav>
+        <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')" ng-show="mainapp.isadmin">
+            <md-toolbar class="md-toolbar md-hue-3">
+                <h1 class="md-toolbar-tools">SCBWI Florida</h1>
+            </md-toolbar>
+            <md-list class="left-menu">
+                <md-subheader>Welcome @User.Identity.Name</md-subheader>
+                <md-divider></md-divider>
+                <md-subheader>Admin Tools</md-subheader>
+                <md-divider></md-divider>
+                <md-list-item>
+                    <a href="/Admin">
+                        <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                            <div class="inset">
+                                <md-button class="md-primary md-raised">
+                                    <md-icon>home</md-icon> Admin Panel
+                                </md-button>
+                            </div>
+                        </md-item-content>
+                    </a>
+                </md-list-item>
+                <md-list-item>
+                    <a target="_blank" href="/Admin/GetCsv">
+                        <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                            <div class="inset">
+                                <md-button class="md-primary md-raised">
+                                    <md-icon>file_download</md-icon> Download Report
+                                </md-button>
+                            </div>
+                        </md-item-content>
+                    </a>
+                </md-list-item>
+            </md-list>
+        </md-sidenav>
 
-    @RenderBody()
+        @RenderBody()
+    </section>
 
     <environment names="Development">
         <script src="~/lib/angular/angular.js"></script>
