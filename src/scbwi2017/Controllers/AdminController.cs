@@ -59,7 +59,9 @@ namespace scbwi2017.Controllers
                 .Include(x => x.meal)
                 .Include(x => x.type);
 
-            return frontPage ? Json(reg.Select(x => x.Flatten()).Take(10).ToList()) : Json(reg.Select(x => x.Flatten()).ToList());
+            _logger.LogInformation($"Front page: {frontPage}");
+
+            return frontPage ? Json(reg.OrderByDescending(x => x.paid).Select(x => x.Flatten()).Take(10).ToList()) : Json(reg.Select(x => x.Flatten()).ToList());
         }
 
         [Produces("text/csv")]

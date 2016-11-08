@@ -235,7 +235,6 @@ function RegController(menu, info, $mdDialog, error) {
             }, function (err, paypalInstance) {
                 ppbutton.addEventListener('click', function () {
                     self.showDialog();
-                    console.log(self.total);
 
                     // Tokenize here!
                     paypalInstance.tokenize({
@@ -628,7 +627,6 @@ function AdminCtrl($http, menu) {
     self.getRegistrations = function () {
         $http.post('/admin/registrations?frontPage=' + !self.all)
             .then(function (data) {
-                console.log(data);
                 self.registrations = data.data;
             },
                 function (data) {
@@ -825,17 +823,17 @@ function AdminCtrl($http, menu) {
 
         if (!save) {
             self.newcoupon = !self.newcoupon;
-            self.newcoupon = {};
+            self.newco = {};
             self.newcoloading = false;
 
             return;
         }
 
-        $http.post('/admin/workshops', self.newco)
+        $http.post('/admin/coupons', self.newco)
             .then(function (data) {
                 if (data.data.success) {
                     self.newcoupon = !self.newcoupon;
-                    self.newcoupon = {};
+                    self.newco = {};
                     self.getCoupons();
                 } else {
                     // uh oh
@@ -857,6 +855,16 @@ function AdminCtrl($http, menu) {
                 return "Reduction";
             case 2:
                 return "Set Price";
+            case 3:
+                return "Half Off";
+            case 4:
+                return "Free Critique";
+            case 5:
+                return "Free Comprehensive";
+            case 6:
+                return "Free Conference";
+            case 7:
+                return "Free Conference and Comprehensive";
         }
     }
 
@@ -870,8 +878,10 @@ function AdminCtrl($http, menu) {
     self.getRegistrations();
 }
 
-function SingleController($http, $mdDialog, info) {
+function SingleController($http, $mdDialog, info, menu) {
     var self = this;
+
+    menu.setAdmin();
 
     self.uneditable = true;
 
@@ -919,8 +929,6 @@ function SingleController($http, $mdDialog, info) {
             self.new_total = data.total;
 
             if (shouldcharge) {
-                console.log('they are the same');
-
                 self.withCharge();
             } else {
                 self.withoutCharge();

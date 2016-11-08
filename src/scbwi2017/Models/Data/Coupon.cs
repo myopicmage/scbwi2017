@@ -19,6 +19,11 @@ namespace scbwi2017.Models.Data
     {
         PercentOff,
         Reduction,
-        TotalCost
+        TotalCost,
+        HalfOffBase,
+        FreeCritique,
+        FreeComprehensive,
+        FreeBase,
+        FreeConferenceAndComprehensive
     }
 }

@@ -82,6 +82,38 @@ namespace scbwi2017.Services
                     total = subtotal - Convert.ToDecimal(coupon.value);
                     message = $"This coupon is good for a ${coupon.value} discount!";
                     break;
+                case CouponType.FreeBase:
+                    total = subtotal - (DateTime.Now > late.value ? reg.lateprice : reg.earlyprice);
+                    message = "This coupon is good for a free base conference!";
+                    break;
+                case CouponType.HalfOffBase:
+                    total = subtotal - ((DateTime.Now > late.value ? reg.lateprice : reg.earlyprice) / 2);
+                    message = "This coupon is good for 50% off your base conference!";
+                    break;
+                case CouponType.FreeComprehensive:
+                    if (r.comprehensive > 0)
+                    {
+                        var c = _db.Extras.SingleOrDefault(x => x.id == r.comprehensive);
+                        total = subtotal - c.price;
+                        message = "This coupon is good for a free comprehensive!";
+                    }
+                    break;
+                case CouponType.FreeCritique:
+                    if (r.manuscripts > 0 || r.portfolios > 0)
+                    {
+                        total = subtotal - m_price.value;
+                        message = "This coupon is good for a free critique (manuscript or portfolio)";
+                    }
+                    break;
+                case CouponType.FreeConferenceAndComprehensive:
+                    total = subtotal - (DateTime.Now > late.value ? reg.lateprice : reg.earlyprice);
+                    if (r.comprehensive > 0)
+                    {
+                        var c = _db.Extras.SingleOrDefault(x => x.id == r.comprehensive);
+                        total -= subtotal - c.price;
+                    }
+                    message = "This coupon is good for a free conference AND free comprehensive!";
+                    break;
                 default:
                     total = subtotal;
                     break;
