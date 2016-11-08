@@ -547,6 +547,12 @@ function AdminCtrl($http, menu) {
     self.newmeal = false;
     self.all = false;
 
+    self.setAll = function(set) {
+        self.all = set;
+
+        self.getRegistrations();
+    }
+
     self.getregtypes = function () {
         $http.get('/admin/regtypes')
             .then(function (data) {
