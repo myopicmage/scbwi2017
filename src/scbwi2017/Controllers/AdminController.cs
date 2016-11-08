@@ -62,6 +62,26 @@ namespace scbwi2017.Controllers
             return frontPage ? Json(reg.Select(x => x.Flatten()).Take(10).ToList()) : Json(reg.Select(x => x.Flatten()).ToList());
         }
 
+        [Produces("text/csv")]
+        public IActionResult GetCsv()
+        {
+            var reg = _db.Registrations
+                .OrderBy(x => x.paid)
+                .Include(x => x.user)
+                .Include(x => x.comprehensive)
+                .Include(x => x.first)
+                .Include(x => x.second)
+                .Include(x => x.coupon)
+                .Include(x => x.meal)
+                .Include(x => x.type)
+                .Select(x => x.Flatten())
+                .ToList();
+
+            Response.Headers.Add("content-disposition", $"attachment; filename=registrations-{DateTime.Now:s}.csv");
+
+            return Ok(reg);
+        }
+
         [HttpPost]
         public IActionResult GetRegistration([FromBody] int id)
         {

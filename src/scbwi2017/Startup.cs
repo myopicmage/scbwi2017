@@ -9,9 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using scbwi2017.Data;
 using scbwi2017.Models;
 using scbwi2017.Services;
+using WebApiContrib.Core.Formatter.Csv;
 
 namespace scbwi2017
 {
@@ -47,7 +49,17 @@ namespace scbwi2017
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();
+            var formatOptions = new CsvFormatterOptions
+            {
+                CsvDelimiter = ",",
+                UseSingleLineHeaderInCsv = true
+            };
+
+            services.AddMvc(options =>
+            {
+                options.OutputFormatters.Add(new CsvOutputFormatter(formatOptions));
+                options.FormatterMappings.SetMediaTypeMappingForFormat("csv", MediaTypeHeaderValue.Parse("text/csv"));
+            });
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
