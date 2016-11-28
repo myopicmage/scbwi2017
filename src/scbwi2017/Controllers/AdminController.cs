@@ -506,7 +506,7 @@ namespace scbwi2017.Controllers
         }
 
         public IActionResult Workshops()
-            => Json(_db.Workshops.ToList());
+            => Json(_db.Workshops.OrderBy(x => x.time).ToList());
 
         [HttpPost]
         public IActionResult Workshops([FromBody] Workshop w)
