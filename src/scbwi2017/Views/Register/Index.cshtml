@@ -350,12 +350,12 @@
                             </span>
                         </div>
                     </md-card-content>
-                    <md-card-actions layout="row" layout-align="end center" ng-hide="main.readyToPay">
+                    <md-card-actions layout="row" layout-align="end center" ng-show="main.readyToPay === 'unverified'">
                         <md-button class="md-primary md-raised" ng-click="main.setupButton()">
                             <md-icon>done</md-icon> Looks Good!
                         </md-button>
                     </md-card-actions>
-                    <md-card-actions layout="row" layout-align="end center" ng-show="main.readyToPay">
+                    <md-card-actions layout="row" layout-align="end center" ng-show="main.readyToPay === 'verified'">
                         <script src="https://www.paypalobjects.com/api/button.js?"
                                 data-merchant="braintree"
                                 data-id="paypal-button"
@@ -365,6 +365,11 @@
                                 data-shape="pill"
                                 data-button_type="submit"
                                 data-button_disabled="false"></script>
+                    </md-card-actions>
+                    <md-card-actions layout="row" layout-align="end center" ng-show="main.readyToPay === 'verified'">
+                        <md-button class="md-primary md-raised" ng-click="main.directRegister()">
+                            <md-icon>done</md-icon> Sign Me Up!
+                        </md-button>
                     </md-card-actions>
                 </md-card>
                 <md-card ng-show="mainapp.step === 7" class="fade">

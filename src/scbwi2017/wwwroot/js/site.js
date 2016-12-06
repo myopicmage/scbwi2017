@@ -244,6 +244,7 @@ function RegController(menu, info, $mdDialog, error) {
                         locale: 'en_US',
                     }, function (err, tokenizationPayload) {
                         self.reg.nonce = tokenizationPayload.nonce;
+
                         info.register(self.reg, function (data) {
                             if (data.success) {
                                 menu.setStep(7);
@@ -263,6 +264,20 @@ function RegController(menu, info, $mdDialog, error) {
         });
 
         self.readyToPay = true;
+    }
+
+    self.directRegister = function () {
+        info.directRegister(self.reg, function (data) {
+            if (data.success) {
+                menu.setStep(7);
+            } else {
+                error.error('Error', data.error);
+
+                if (data.submitagain === false) {
+                    ppbutton.disabled = true;
+                }
+            }
+        });
     }
 }
 
@@ -522,6 +537,14 @@ function InfoService($http, error) {
             });
     }
 
+    infoService.directRegister = function (r, callback) {
+        $http
+            .post('/register/directregister', r)
+            .then(function (data) {
+                callback(data.data);
+            });
+    }
+
     return infoService;
 }
 
@@ -546,7 +569,7 @@ function AdminCtrl($http, menu) {
     self.newmeal = false;
     self.all = false;
 
-    self.setAll = function(set) {
+    self.setAll = function (set) {
         self.all = set;
 
         self.getRegistrations();
