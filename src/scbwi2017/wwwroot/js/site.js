@@ -80,7 +80,7 @@ function RegController(menu, info, $mdDialog, error) {
     self.reg.satdinner = 0;
     self.prices = {};
     self.disableCouponButton = false;
-    self.readyToPay = false;
+    self.readyToPay = 'unverified';
 
     info.getToken(function (token) {
         self.token = token;
@@ -113,7 +113,6 @@ function RegController(menu, info, $mdDialog, error) {
 
     //step 1
     self.userInfo = function () {
-
         menu.setStep(2);
     }
 
@@ -224,46 +223,55 @@ function RegController(menu, info, $mdDialog, error) {
     }
 
     self.setupButton = function () {
-        var ppbutton = document.getElementById('paypal-button');
+        if (self.total !== 0) {
+            var ppbutton = document.getElementById('paypal-button');
 
-        braintree.client.create({
-            authorization: self.token
-        }, function (clientErr, clientInstance) {
-            // Create PayPal component
-            braintree.paypal.create({
-                client: clientInstance
-            }, function (err, paypalInstance) {
-                ppbutton.addEventListener('click', function () {
-                    self.showDialog();
+            braintree.client.create({
+                authorization: self.token
+            },
+                function (clientErr, clientInstance) {
+                    // Create PayPal component
+                    braintree.paypal.create({
+                        client: clientInstance
+                    },
+                        function (err, paypalInstance) {
+                            ppbutton.addEventListener('click',
+                                function () {
+                                    self.showDialog();
 
-                    // Tokenize here!
-                    paypalInstance.tokenize({
-                        flow: 'checkout', // Required
-                        amount: self.total, // Required
-                        currency: 'USD', // Required
-                        locale: 'en_US',
-                    }, function (err, tokenizationPayload) {
-                        self.reg.nonce = tokenizationPayload.nonce;
+                                    // Tokenize here!
+                                    paypalInstance.tokenize({
+                                        flow: 'checkout', // Required
+                                        amount: self.total, // Required
+                                        currency: 'USD', // Required
+                                        locale: 'en_US',
+                                    },
+                                        function (err, tokenizationPayload) {
+                                            self.reg.nonce = tokenizationPayload.nonce;
 
-                        info.register(self.reg, function (data) {
-                            if (data.success) {
-                                menu.setStep(7);
-                            } else {
-                                error.error('Error', data.error);
+                                            info.register(self.reg,
+                                                function (data) {
+                                                    if (data.success) {
+                                                        menu.setStep(7);
+                                                    } else {
+                                                        error.error('Error', data.error);
 
-                                if (data.submitagain === false) {
-                                    ppbutton.disabled = true;
-                                }
-                            }
+                                                        if (data.submitagain === false) {
+                                                            ppbutton.disabled = true;
+                                                        }
+                                                    }
 
-                            $mdDialog.hide();
+                                                    $mdDialog.hide();
+                                                });
+                                        });
+                                });
                         });
-                    });
                 });
-            });
-        });
 
-        self.readyToPay = true;
+            self.readyToPay = 'verified';
+        } else {
+            self.readyToPay = 'free';
+        }
     }
 
     self.directRegister = function () {
